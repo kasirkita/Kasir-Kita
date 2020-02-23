@@ -1,0 +1,125 @@
+.autocomplete-wrapper {
+    position: relative;
+}
+
+.autocomplete {
+    position: absolute;
+    z-index: 2;
+    background-color: #fff;
+    width: 100%;
+    border: 1px solid #eee;
+}
+
+.autocomplete > ul {
+    padding: 0px;
+    list-style: none;
+}
+
+.autocomplete > ul > li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+.autocomplete > ul > li:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+.dropdown-active {
+    background-color: #007bff;
+}
+
+.dropdown-active > a {
+    color: #fff;
+}
+
+.table-custom > tbody p {
+    margin-bottom: 0px;
+    font-weight: bold;
+}
+
+.table-custom > tbody > tr > td {
+    font-weight: normal !important;
+}
+
+.table-responsive {
+    display: table;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.table-custom th {
+    position: relative;
+    cursor: pointer;
+    padding-right: 35px !important;
+}
+  
+.table-sorting {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #ccc;
+}
+  
+.table-sorting.active {
+    color: #007bff;
+}
+  
+.table-custom td p {
+    margin-bottom: 0px !important;
+}
+  
+.table-custom td div {
+    margin-top: 10px;
+}
+  
+.table-custom td div button:first-child {
+    margin-right: 5px;
+}
+  
+.table-scrollable tbody{
+    display:block;
+    overflow:auto;
+    height:200px;
+    width:100%;
+}
+
+.dropzone-wrapper {
+    border: 2px dashed #eee;
+}
+
+.table-scrollable thead tr, .table-scrollable tfoot tr {
+    display:block;
+}
+
+.table-scrollable tr > th, .table-scrollable tr > td {
+    width: 33.3%;
+}
+
+.table-scrollable tr > td {
+    font-weight: normal;
+    position: relative;
+}
+
+.table-scrollable tr > td:last-child {
+    padding-right: 35px;
+}
+
+.table-scrollable tr > td > button.btn-remove {
+    position: absolute;
+    right: 0px;
+    top: 5px;
+}
+
+.btn-close-modal {
+    position: absolute;
+    right: 0;
+}
+
+.react-datepicker-wrapper {
+    width: 100% !important;
+}
