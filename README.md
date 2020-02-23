@@ -25,4 +25,18 @@ Silahkan berkonstribusi atau mengirimkan issue untuk pengembangan, silahkan guna
 
 Jika merasa aplikasi ini berguna, silakan melakukan dukungan dengan cara berdonasi seikhlasnya dibawah ini
 
-<img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/dana.png" alt="Dana" width="120" />
+<table>
+  <tbody>
+    <tr>
+        <td>
+          <img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/dana.png" alt="Dana" width="120" /            
+        </td>
+        <td>
+          <img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/ovo.png" alt="Ovo" width="120" /            
+        </td>
+        <td>
+          <img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/paypal.png" alt="Paypal" width="120" /            
+        </td>
+    </tr>
+  </tbody>
+</table>
