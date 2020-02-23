@@ -40,3 +40,10 @@ Jika merasa aplikasi ini berguna, silakan melakukan dukungan dengan cara berdona
     </tr>
   </tbody>
 </table>
+
+
+## Kontributor
+
+- Razaq Hakim
+- Yulianto Saparudin
+- Rega Rivaldi
