@@ -123,3 +123,9 @@
 .react-datepicker-wrapper {
     width: 100% !important;
 }
+
+.receipt {
+    font-family: monospace;
+    padding: 10px;
+    border: 1px solid #aaa;
+}

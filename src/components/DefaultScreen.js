@@ -64,8 +64,7 @@ export class DefaultScreen extends Component {
                                 path === 'user' || 
                                 path === 'customer' ||
                                 path === 'supplier' ||
-                                path === 'role' ||
-                                path === 'permission'
+                                path === 'role'
                                  ? 'dropdown-active' : ''}`}>
                                 <a className="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i className="mdi mdi-account mr-2"></i> Pengguna
@@ -75,7 +74,6 @@ export class DefaultScreen extends Component {
                                     <NavLink className="dropdown-item" to="/customer">Pelanggan</NavLink>
                                     <NavLink className="dropdown-item" to="/supplier">Pemasok</NavLink>
                                     <NavLink className="dropdown-item" to="/role">Peranan</NavLink>
-                                    <NavLink className="dropdown-item" to="/permission">Izin</NavLink>
                                 </div>
                             </li>
                             <li className={`dropdown ${ 

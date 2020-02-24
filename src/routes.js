@@ -22,6 +22,11 @@ import Supplier from './views/Supplier/Supplier';
 import AddSupplier from './views/Supplier/AddSupplier';
 import Role from './views/Role/Role';
 import AddRole from './views/Role/AddRole';
+import SalesReport from './views/Report/SalesReport';
+import PurchasReport from './views/Report/PurchaseReport';
+import ExpenseReport from './views/Report/ExpenseReport';
+import StockReport from './views/Report/StockReport';
+import Settings from './views/Settings';
 
 export default [
     {
@@ -149,5 +154,35 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: AddRole
+    },
+    {
+        path: '/report-sales',
+        exact: true,
+        layout: DefaultScreen,
+        component: SalesReport
+    },
+    {
+        path: '/report-purchase',
+        exact: true,
+        layout: DefaultScreen,
+        component: PurchasReport
+    },
+    {
+        path: '/report-expense',
+        exact: true,
+        layout: DefaultScreen,
+        component: ExpenseReport
+    },
+    {
+        path: '/report-stock',
+        exact: true,
+        layout: DefaultScreen,
+        component: StockReport
+    },
+    {
+        path: '/settings',
+        exact: true,
+        layout: DefaultScreen,
+        component: Settings
     }
 ]
