@@ -27,6 +27,9 @@ import PurchasReport from './views/Report/PurchaseReport';
 import ExpenseReport from './views/Report/ExpenseReport';
 import StockReport from './views/Report/StockReport';
 import Settings from './views/Settings';
+import Discount from './views/Discount/Discount';
+import AddDiscount from './views/Discount/AddDiscount';
+import Welcome from './views/Welcome';
 
 export default [
     {
@@ -184,5 +187,23 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: Settings
+    },
+    {
+        path: '/discount',
+        exact: true,
+        layout: DefaultScreen,
+        component: Discount
+    },
+    {
+        path: '/discount/create',
+        exact: true,
+        layout: DefaultScreen,
+        component: AddDiscount
+    },
+    {
+        path: '/welcome',
+        exact: true,
+        layout: FullScreen,
+        component: Welcome
     }
 ]

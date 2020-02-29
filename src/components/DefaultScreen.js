@@ -58,6 +58,9 @@ export class DefaultScreen extends Component {
                                 </div>
                             </li>
                             <li>
+                                <NavLink className="nav-link" to="/discount"><i className="mdi mdi-ticket-confirmation mr-2"></i> Promo</NavLink>
+                            </li>
+                            <li>
                                 <NavLink className="nav-link" to="/stock"><i className="mdi mdi-library-shelves mr-2"></i> Stok</NavLink>
                             </li>
                             <li className={`dropdown ${ 

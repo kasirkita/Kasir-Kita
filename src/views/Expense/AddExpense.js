@@ -8,7 +8,6 @@ export class AddExpense extends Component {
 
     state = {
         payment_date: new Date(),
-        modal: false
     }
 
     changeDate = (name, date) => {
@@ -18,22 +17,8 @@ export class AddExpense extends Component {
         })
     }
 
-    openModal = () => {
-        this.setState({
-            ...this.state,
-            modal: true
-        })
-    }
-
-    handleCloseModal = () => {
-        this.setState({
-            ...this.state,
-            modal: false
-        })
-    }
-
     render() {
-        const { payment_date, modal } = this.state
+        const { payment_date } = this.state
         return (
         <Fragment>
 

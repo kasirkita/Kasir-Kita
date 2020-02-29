@@ -129,3 +129,14 @@
     padding: 10px;
     border: 1px solid #aaa;
 }
+
+.term-and-condition {
+    padding: 20px;
+    border: 1px solid #e1e1e1;
+    height: 200px;
+    overflow-y: scroll;
+}
+
+.btn-disabled {
+    cursor: not-allowed;
+}
