@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { getProduct } from '../../store/actions/ProductActions'
 import { connect } from 'react-redux'
-import Barcode from 'react-barcode'
 
 export class ViewProduct extends Component {
     componentDidMount() {

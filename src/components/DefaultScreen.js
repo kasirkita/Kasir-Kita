@@ -48,6 +48,7 @@ export class DefaultScreen extends Component {
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <NavLink className="dropdown-item" to="/product">Data Barang</NavLink>
                                     <NavLink className="dropdown-item" to="/category">Kategori Barang</NavLink>
+                                    <NavLink className="dropdown-item" to="/unit">Satuan Barang</NavLink>
                                 </div>
                             </li>
                             <li>
