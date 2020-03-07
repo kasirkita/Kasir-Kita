@@ -18,7 +18,6 @@ export class AddDiscount extends Component {
 
     render() {
         const { valid_thru } = this.state
-        // console.log(this.state.valid_thru)
         return (
         <Fragment>
 

@@ -1,13 +1,12 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import AsyncCreateableSelect from 'react-select/async-creatable'
-import { saveProduct } from '../../store/actions/ProductActions';
+import { getProduct, updateProduct } from '../../store/actions/ProductActions';
 import { connect } from 'react-redux'
 import Error from '../Errors/Error';
 import { withToastManager } from 'react-toast-notifications'
 import Axios from 'axios'
 import { url } from '../../global'
-import NumberFormat from 'react-number-format'
 
 class AddProduct extends Component {
 
@@ -25,11 +24,7 @@ class AddProduct extends Component {
     }
 
     handleSave = () => {
-        if (this.props.isModal) {
-            this.props.onFinish()
-        } else {
-            this.props.saveProduct(this.state)
-        }
+        this.props.updateProduct(this.props.match.params.id, this.state)
     }
 
     handleChange = (name) => (e) => {
@@ -37,15 +32,6 @@ class AddProduct extends Component {
             ...this.state,
             [name]: e.target.value
         })
-    }
-
-    handleChangeNumber = (name) => (value) => {
-        this.setState({
-            ...this.state,
-            [name]: value.floatValue,
-        })
-
-        console.log(name, value.floatValue)
     }
 
     handleChangeSelect = (name) => (e) => {
@@ -68,9 +54,10 @@ class AddProduct extends Component {
 
     componentDidUpdate = (prevProps) => {
        
+        const { toastManager } = this.props
+
         if (prevProps.type !== this.props.type) {
-            if (this.props.type === 'save') {
-                const { toastManager } = this.props;
+            if (this.props.type === 'update') {
                 
                 if (this.props.success) {
     
@@ -89,7 +76,45 @@ class AddProduct extends Component {
                     });
                 }
             }
+
+            if (this.props.type === 'get') {
+
+                if (this.props.success) {
+
+                    
+                    if (this.props.product !== prevProps.product) {
+                        
+                        const { product } = this.props
+
+                        this.setState({
+                            ...this.state,
+                            code: product.code,
+                            name: product.name,
+                            cost: product.cost,
+                            price: product.price,
+                            wholesale: product.wholesale,
+                            unit_id: product.unit && product.unit._id,
+                            unit_label: product.unit && product.unit.name,
+                            category_id: product.category && product.category._id,
+                            category_label: product.category && product.category.name,
+                            stock: product.stock && product.stock.amount
+                        })
+                    }
+    
+                } else {
+    
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    });
+                }
+
+            }
         }
+    }
+
+    componentDidMount(){
+        this.props.getProduct(this.props.match.params.id)
     }
 
     render() {
@@ -154,7 +179,7 @@ class AddProduct extends Component {
                         </div>
                         <div className="form-group">
                             <label className="control-label">Harga Beli <span className="text-danger">*</span></label>
-                            <NumberFormat decimalSeparator="." thousandSeparator="," prefix="Rp. " type="text" className={`form-control text-right ${validate && validate.cost && 'is-invalid'}`} onValueChange={this.handleChangeNumber('cost')} value={cost} placeholder="Rp. 0.0"/>
+                            <input type="text" className={`form-control text-right ${validate && validate.cost && 'is-invalid'}`} onChange={this.handleChange('cost')} value={cost} placeholder="Rp. 0.0"/>
                             {
                                 validate && validate.cost && (
                                     <div className="invalid-feedback">{ validate.cost[0] }</div>
@@ -163,7 +188,7 @@ class AddProduct extends Component {
                         </div>
                         <div className="form-group">
                             <label className="control-label">Harga Jual <span className="text-danger">*</span></label>
-                            <NumberFormat decimalSeparator="." thousandSeparator="," prefix="Rp. " type="text" className={`form-control text-right ${validate && validate.price && 'is-invalid'}`} onValueChange={this.handleChangeNumber('price')} value={price} placeholder="Rp. 0.0"/>
+                            <input type="text" className={`form-control text-right ${validate && validate.price && 'is-invalid'}`} onChange={this.handleChange('price')} value={price} placeholder="Rp. 0.0"/>
                             {
                                 validate && validate.price && (
                                     <div className="invalid-feedback">{ validate.price[0] }</div>
@@ -174,7 +199,7 @@ class AddProduct extends Component {
                     <div className="col-md-6 mt-3">
                         <div className="form-group">
                             <label className="control-label">Harga Grosir <span className="text-danger">*</span></label>
-                            <NumberFormat decimalSeparator="." thousandSeparator="," prefix="Rp. " type="text" className={`form-control text-right ${validate && validate.wholesale && 'is-invalid'}`} onValueChange={this.handleChangeNumber('wholesale')} value={wholesale} placeholder="Rp. 0.0"/>
+                            <input type="text" className={`form-control text-right ${validate && validate.wholesale && 'is-invalid'}`} onChange={this.handleChange('wholesale')} value={wholesale} placeholder="Rp. 0.0"/>
                             {
                                 validate && validate.wholesale && (
                                     <div className="invalid-feedback">{ validate.wholesale[0] }</div>
@@ -207,7 +232,7 @@ class AddProduct extends Component {
                         </div>
                         <div className="form-group">
                             <label className="control-label">Stok <span className="text-danger">*</span></label>
-                            <input type="text" className={`form-control text-right ${validate && validate.stock && 'is-invalid'}`} onChange={this.handleChange('stock')} value={stock} placeholder="0.0"/>
+                            <input type="text" readOnly className={`form-control btn-disabled text-right ${validate && validate.stock && 'is-invalid'}`} value={stock} placeholder="0.0"/>
                             {
                                 validate && validate.stock && (
                                     <div className="invalid-feedback">{ validate.stock[0] }</div>
@@ -220,9 +245,9 @@ class AddProduct extends Component {
                     <hr/>
                     {
                         fetching ? (
-                            <button className="btn btn-primary btn-disabled mr-2" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Simpan</button>
+                            <button className="btn btn-primary btn-disabled mr-2" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Simpan Perubahan</button>
                         ) : (
-                            <button className="btn btn-primary mr-2" onClick={this.handleSave}><i className="mdi mdi-content-save mr-2"></i>Simpan</button>
+                            <button className="btn btn-primary mr-2" onClick={this.handleSave}><i className="mdi mdi-content-save mr-2"></i>Simpan Perubahan</button>
                         )
                     }
                     <button className="btn btn-secondary"><i className="mdi mdi-reload mr-2"></i>Reset</button>
@@ -292,13 +317,15 @@ const mapStateToProps = state => {
         fetching: state.product.fetching,
         error: state.product.error,
         success: state.product.success,
-        type: state.product.type
+        type: state.product.type,
+        product: state.product.product
     }    
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveProduct: data => dispatch(saveProduct(data))
+        updateProduct: (id, data) => dispatch(updateProduct(id, data)),
+        getProduct: id => dispatch(getProduct(id))
     }
 }
 

@@ -30,13 +30,15 @@ import Settings from './views/Settings';
 import Discount from './views/Discount/Discount';
 import AddDiscount from './views/Discount/AddDiscount';
 import Welcome from './views/Welcome';
+import EditProduct from './views/Product/EditProduct';
+import ViewProduct from './views/Product/ViewProduct';
 
 export default [
     {
         path: '/',
         exact: true,
         layout: FullScreen,
-        component: () => <Redirect to="/login" />
+        component: () => <Redirect to="/dashboard" />
     },
     {
         path: '/login',
@@ -67,6 +69,18 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: AddProduct
+    },
+    {
+        path: '/product/edit/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: EditProduct
+    },
+    {
+        path: '/product/view/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: ViewProduct
     },
     {
         path: '/category',

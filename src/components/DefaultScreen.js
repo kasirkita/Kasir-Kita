@@ -2,6 +2,12 @@ import React, { Component } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 
 export class DefaultScreen extends Component {
+
+    handleLogout = () => {
+        sessionStorage.removeItem('token')
+        return this.props.history.push('/login')
+    }
+
     render() {
         const path = this.props.location.pathname.split('/')[1]
         
@@ -9,17 +15,17 @@ export class DefaultScreen extends Component {
             <div className="container-fluid p-0">
                 
                 <div className="navbar navbar-expand-lg navbar-light bg-light">
-                    <a className="navbar-brand pl-3" href="#">
+                    <Link className="navbar-brand pl-3" to="/">
                         <i className="mdi mdi-desktop-classic mr-2"></i>Kasir Kita 2.0
-                    </a>
+                    </Link>
                     <ul className="navbar-nav ml-auto">
                         <li className="dropdown">
-                            <a className="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i className="mdi mdi-account mr-2"></i> Halo Agus Saripudin
-                            </a>
+                            <button className="btn btn-link nav-link dropdown-toggle" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img className="rounded-circle mr-2" width="25px" src={sessionStorage.getItem('avatar') !== 'null' ? sessionStorage.getItem('avatar') : require('../assets/img/default.png')} alt=""/> Halo {sessionStorage.getItem('name')}
+                            </button>
 
                             <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <a className="nav-link active" href="#"><i className="mdi mdi-lock-open mr-2"></i>Keluar</a>
+                                <button onClick={this.handleLogout} className="btn btn-link nav-link active pointer"><i className="mdi mdi-lock-open mr-2"></i>Keluar</button>
                             </div>
                         </li>
                     </ul>
@@ -35,7 +41,7 @@ export class DefaultScreen extends Component {
                                 <NavLink className="nav-link" to="/cashier"><i className="mdi mdi-desktop-classic mr-2"></i> Kasir</NavLink>
                             </li>
                             <li className={`dropdown ${ path === 'product' || path === 'category' ? 'dropdown-active' : ''}`}>
-                                <a className="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a className="nav-link dropdown-toggle pointer" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i className="mdi mdi-calendar-text mr-2"></i> Barang 
                                 </a>
 
@@ -48,7 +54,7 @@ export class DefaultScreen extends Component {
                                 <NavLink className="nav-link" to="/sales"><i className="mdi mdi-basket mr-2"></i> Penjualan</NavLink>
                             </li>
                             <li className={`dropdown ${ path === 'purchase' || path === 'expense' ? 'dropdown-active' : ''}`}>
-                                <a className="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a className="nav-link dropdown-toggle pointer" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i className="mdi mdi-store mr-2"></i> Pembelian
                                 </a>
 
@@ -69,7 +75,7 @@ export class DefaultScreen extends Component {
                                 path === 'supplier' ||
                                 path === 'role'
                                  ? 'dropdown-active' : ''}`}>
-                                <a className="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a className="nav-link dropdown-toggle pointer" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i className="mdi mdi-account mr-2"></i> Pengguna
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -85,7 +91,7 @@ export class DefaultScreen extends Component {
                                 path === 'report-expense' ||
                                 path === 'report-stock' 
                                  ? 'dropdown-active' : ''}`}>
-                                <a className="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a className="nav-link dropdown-toggle pointer" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i className="mdi mdi-file mr-2"></i> Laporan
                                 </a>
 

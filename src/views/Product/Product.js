@@ -2,6 +2,14 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import Table from '../../components/Table'
 import Modal from 'react-bootstrap4-modal'
+import { fetchProduct, toggleProduct, deleteProduct, importProduct, selectProduct } from '../../store/actions/ProductActions'
+import { withToastManager } from 'react-toast-notifications'
+import Error from '../Errors/Error'
+import { connect } from 'react-redux'
+import Dropzone from 'react-dropzone'
+import Axios from 'axios'
+import { url } from '../../global'
+import fileDownload from 'js-file-download'
 
 export class Product extends Component {
 
@@ -11,12 +19,91 @@ export class Product extends Component {
             sort: 'asc'
         },
         modal: false,
-        deleteModal: false
+        deleteModal: false,
+        keyword: '',
+        page: 1,
+        perpage: 10,
+        deletedId: '',
+        filter: 'all',
+        downloading: false,
+        printing: false,
+    }
+
+    handleChange = (name) => (e) => {
+        this.setState({
+            ...this.state,
+            [name]: e.target.value
+        })
+    }
+
+    handleChangeSelect = (name) => (e) => {
+
+        const {
+            keyword,
+            page,
+            perpage,
+            ordering,
+            filter
+        } = this.state
+
+        
+    
+        this.props.fetchProduct({
+            keyword,
+            page,
+            perpage,
+            ordering,
+            filter,
+            [name]: e.target.value
+        })
+
+        this.setState({
+			...this.state,
+           [name]: e.target.value
+        })
+    }
+    
+    handleSearch = () => {
+
+        const {
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
+        } = this.state
+
+        this.props.fetchProduct({
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
+        })
     }
 
     handleSorting = (e) => {
         const type = e.target.id
         const sort = this.state.ordering.sort
+
+        const {
+            keyword,
+            page,
+            perpage,
+            filter
+        } = this.state
+    
+        this.props.fetchProduct({
+            ordering: {
+                type: type,
+                sort: sort === 'asc' ? 'desc' : 'asc'
+            },
+            keyword,
+            page,
+            perpage,
+            filter
+        })
+
         this.setState({
 			...this.state,
             ordering: {
@@ -40,31 +127,257 @@ export class Product extends Component {
         })
     }
 
-    handleDeleteModal = () => {
+    handleDeleteModal = (id) => {
         this.setState({
             ...this.state,
-            deleteModal: true
+            deleteModal: true,
+            deletedId: id
         })
     }
 
     handleCloseDeleteModal = () => {
         this.setState({
             ...this.state,
-            deleteModal: false
+            deleteModal: false,
+            deletedId: ''
+        })
+    }
+
+    handleDelete = () => {
+        this.props.deleteProduct(this.state.deletedId)
+    }
+
+    handleClickPage = (page) => {
+
+        const {
+            ordering,
+            keyword,
+            perpage,
+            filter
+        } = this.state
+
+        this.props.fetchProduct({
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
+        })
+
+        this.setState({
+            ...this.state,
+            page
+        })
+    }
+
+    handleDrop = (files) => {
+        
+        files && files.map(file => {
+
+           this.props.importProduct(file)
+
+        })
+    }
+
+    handleDropFail = (files) => {
+        const { toastManager } = this.props
+        this.setState({
+            ...this.state,
+            modal: false
+        })
+
+        if (files.length > 1) {
+            toastManager.add('Hanya boleh satu berkas saja', {
+                appearance: 'error',
+                autoDismiss: true
+            })
+        } else {
+            files.map(file => {
+                if (file.size > 102400) {
+                    toastManager.add('Ukuran berkas terlalu besar maksimal 1Mb', {
+                        appearance: 'error',
+                        autoDismiss: true
+                    })
+                }
+
+                if (file.type !== 'text/csv') {
+                    
+                    console.log(file.type)
+                    toastManager.add('Format berkas tidak didukung', {
+                        appearance: 'error',
+                        autoDismiss: true
+                    })
+                }
+            })
+        }
+
+    }
+
+    handleActive = (e) => {
+        const value = e.target.value
+        this.props.toggleProduct(value)
+        
+    }
+
+    handleSelected = (e) => {
+        const value = e.target.value
+        this.props.selectProduct(value)
+    }
+
+    componentDidUpdate = (prevProps) => {
+
+        const { toastManager } = this.props;
+
+        if (prevProps.type !== this.props.type) {
+            if (this.props.type === 'delete') {
+                if (this.props.success) {
+
+                    toastManager.add(this.props.message, {
+                        appearance: 'success',
+                        autoDismiss: true
+                    })
+
+                    this.setState({
+                        ...this.state,
+                        deleteModal: false
+                    })
+                    
+                    this.props.fetchProduct(this.state)
+
+                } else {
+
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    })
+
+                }
+            }
+
+            if (this.props.type === 'import') {
+                if (this.props.success) {
+
+                    toastManager.add(this.props.message, {
+                        appearance: 'success',
+                        autoDismiss: true
+                    })
+
+                    this.setState({
+                        ...this.state,
+                        modal: false
+                    })
+                    
+                    this.props.fetchProduct(this.state)
+
+                } else {
+
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    })
+
+                }
+            }
+        }
+    }
+
+    handleDownload = () => {
+        
+        this.setState({
+            ...this.state,
+            downloading: true
+        })
+
+        Axios.get(`${url}/product/template`, {
+            headers: {
+                Authorization:`Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+            fileDownload(res.data, 'template_produk.csv');
+            this.setState({
+                ...this.state,
+                downloading: false,
+                modal: false
+            })
+        })
+    }
+
+    handlePrintPdf = () => {
+        this.setState({
+            ...this.state,
+            printing: true
+        })
+
+        Axios.get(`${url}/product/print`, {
+            headers: {
+                Authorization:`Bearer ${sessionStorage.getItem('token')}`
+            },
+            responseType: 'blob'
+        }).then(res => {
+            
+            fileDownload(res.data, 'print_label.pdf');
+
+            this.setState({
+                ...this.state,
+                printing: false,
+                modal: false
+            })
+
+        })
+    }
+
+    handlePrint = (name) => (e) => {
+        const { selected, toastManager } = this.props
+        if (selected < 1) {
+            toastManager.add('Harap pilih dulu data', {
+                appearance: 'warning',
+                autoDismiss: true
+            })
+        } else {
+            if (name === 'thermal') {
+                console.log('Printed with thermal')
+            } else {
+                this.handlePrintPdf()
+            }
+        }
+    }
+
+    componentDidMount = () => {
+
+        const {
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
+        } = this.state
+    
+        this.props.fetchProduct({
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
         })
     }
 
     render() {
-        const { ordering, modal, deleteModal } = this.state;
+        const { ordering, modal, deleteModal, downloading, printing } = this.state
+        const { data, fetching, error, uploading, selected } = this.props
+        const products = data && data.data
 
         const theads = [
             { name: 'name', value: 'Nama', sortable: true },
-            { name: 'category.name', value: 'Kategori', sortable: true },
-            { name: 'cost', value: 'Harga Jual', sortable: true },
+            { name: 'category', value: 'Kategori', sortable: true },
+            { name: 'price', value: 'Harga Jual', sortable: true },
             { name: 'stock', value: 'Stok', sortable: true },
             { name: 'is_active', value: 'Aktif', sortable: false },
             { name: 'options', value: 'Opsi', sortable: false }
-        ];
+        ]
+
+        if (error && error.status !== 422)
+            return <Error title={error.statusText} message={error.data.message} code={error.status} connection={error.connection} />
+
         return (
             <Fragment>
                 <div className="row p-3"> 
@@ -77,15 +390,40 @@ export class Product extends Component {
                             <h5 className="modal-title">Impor data barang</h5>
                         </div>
                         <div className="modal-body">
-                            <div className="dropzone-wrapper text-center py-4 my-3">
-                                <p className="text-muted">Seret dan lepaskan</p>
-                                <button className="btn btn-primary"><i className="mdi mdi-folder-open mr-2"></i>Jelajahi Berkas</button>
-                            </div>
+                            
+                                <Dropzone 
+                                    onDrop={(files) => this.handleDrop(files)}
+                                    multiple={false}
+                                    onDropRejected={files => this.handleDropFail(files)}
+                                    accept=".csv"
+                                    maxSize={102400}
+                                    >
+                                    {({getRootProps, getInputProps}) => (
+                                        <div className={`dropzone-wrapper text-center py-4 my-3 ${uploading ? 'uploading' : ''}`}>
+                                        <section>
+                                        <p className="text-muted">Seret dan lepaskan</p>
+                                        <div {...getRootProps()}>
+                                            <input {...getInputProps()} />
+                                            {
+                                                uploading ? (
+                                                    <button className="btn btn-primary btn-disabled" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Mengunggah ...</button>
+
+                                                ) : (
+
+                                                    <button className="btn btn-primary"><i className="mdi mdi-folder-open mr-2"></i>Jelajahi Berkas</button>
+                                                )
+                                            }
+                                        </div>
+                                        </section>
+                                    </div>
+                                    )}
+                                </Dropzone>
+
                             
                             <div className="row d-flex justify-content-start">
                                 <div className="col">
                                     <div className="col-12">
-                                        <small className="text-muted">* Format berkas .xls .xlsx atau .csv</small>
+                                        <small className="text-muted">* Format berkas .csv delimeter (;)</small>
                                     </div>
                                     <div className="col-12">
                                         <small className="text-muted">* Ukuran maks 1Mb</small>
@@ -93,7 +431,14 @@ export class Product extends Component {
                                 </div>
                                 <div className="col-5">
                                     <div className="col-12  d-flex justify-content-end">
-                                        <button className="btn btn-success btn-sm"><i className="mdi mdi-download mr-2"></i>Unduh template</button>
+                                        {
+                                            downloading ? (
+                                                <button className="btn btn-success btn-sm btn-disabled" disabled><i className="mdi mdi-loading mdri-spin mr-2"></i>Mengunduh</button>
+                                            ) : (
+
+                                                <button className="btn btn-success btn-sm" onClick={this.handleDownload}><i className="mdi mdi-download mr-2"></i>Unduh template</button>
+                                            )
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -113,7 +458,7 @@ export class Product extends Component {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={this.handleCloseDeleteModal}><i className="mdi mdi-close mr-2"></i>Tutup</button>
-                            <button type="button" className="btn btn-primary"><i className="mdi mdi-alert mr-2"></i>Hapus data</button>
+                            <button type="button" className="btn btn-primary" onClick={this.handleDelete}><i className="mdi mdi-alert mr-2"></i>Hapus data</button>
                         </div>
                     </Modal>
                 
@@ -130,34 +475,34 @@ export class Product extends Component {
                                     <button className="btn btn-secondary mr-2" onClick={this.handleModal}><i className="mdi mdi-arrow-up-thick mr-2"></i>Impor Data Barang</button>
                                 </div>
                                 <div className="d-flex justify-content-start mt-2">
-                                    <button className="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i className="mdi mdi-printer mr-2"></i>Cetak label</button>
+                                    <button className={`btn btn-secondary dropdown-toggle ${printing ? 'disabled': ''}`} disabled={printing} type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{ printing ? (<i className="mdi mdi-loading mdi-spin mr-2"/>) : (<i className="mdi mdi-printer mr-2"/>) }Cetak label</button>
                                         <div className="dropdown-menu">
-                                            <a className="dropdown-item" href="#">Cetak dengan thermal</a>
-                                            <a className="dropdown-item" href="#">Cetak dengan PDF</a>
+                                            <a className="dropdown-item pointer" onClick={this.handlePrint('thermal')}>Cetak dengan thermal</a>
+                                            <a className="dropdown-item pointer" onClick={this.handlePrint('pdf')}>Cetak dengan PDF</a>
                                         </div>
                                 </div>
                                 <div className="d-flex justofy-content-start mt-2">
-                                    <small className="text-muted">Barang terpilih (0)</small>
+                                    <small className="text-muted">Barang terpilih ({ selected ? selected : 0 })</small>
                                 </div>
                             </div>
                             <div className="col-md-6">
                                 <div className="d-flex justify-content-end">
                                     <div className="form-group mr-4">
                                         <label className="control-label">Filter</label>
-                                        <select className="form-control">
+                                        <select className="form-control" onChange={this.handleChangeSelect('filter')}>
                                             <option value="all">Semua</option>
                                             <option value="active">Hanya yang aktif</option>
-                                            <option value="inactiv">Hanya yang tidak aktif</option>
-                                            <option value="active">Hanya yang dipilih</option>
-                                            <option value="active">Hanya yang tidak dipilih</option>
+                                            <option value="inactive">Hanya yang tidak aktif</option>
+                                            <option value="selected">Hanya yang dipilih</option>
+                                            <option value="unselected">Hanya yang tidak dipilih</option>
                                         </select>
                                     </div>
                                     <div className="form-group">
                                         <label className="control-label">Pencarian</label>
                                         <div className="input-group mb-3">
-                                            <input type="text" className="form-control" placeholder="Kata kunci"/>
+                                            <input type="text" className="form-control" onKeyPress={(e) => (e.key === 'Enter') && this.handleSearch() } onChange={this.handleChange('keyword')} placeholder="Kata kunci"/>
                                             <div className="input-group-prepend">
-                                                <button className="btn btn-secondary" type="button"><i className="mdi mdi-magnify"></i></button>
+                                                <button className="btn btn-secondary" onClick={this.handleSearch} type="button"><i className="mdi mdi-magnify"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -168,133 +513,87 @@ export class Product extends Component {
 
                     <div className="col-md-12 mt-3">
                         <Table theads={theads} ordering={ordering} handleSorting={this.handleSorting}>
-                            <tr>
-                                <td>
-                                    <div className="form-check">
-                                        <input className="form-check-input" type="checkbox" value="" id="1" />
-                                        <label className="form-check-label" htmlFor="1">
-                                            ABC Kopi Susu 18gr
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>Minuman Sashet</td>
-                                <td className="text-right">Rp. 1,500</td>
-                                <td className="text-center">200</td>
-                                <td className="text-center"><input type="checkbox" defaultChecked={true} /></td>
-                                <td>
-                                    <button onClick={this.handleDeleteModal} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                    <button className="btn p-0 text-success btn-link btn-small mr-3">Ubah</button>
-                                    <button className="btn p-0 text-info btn-link btn-small">Lihat</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="form-check">
-                                        <input className="form-check-input" type="checkbox" value="" id="2" />
-                                        <label className="form-check-label" htmlFor="2">
-                                            ABC Asam Jawa 250ml
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>Minuman</td>
-                                <td className="text-right">Rp. 7,500</td>
-                                <td className="text-center">180</td>
-                                <td className="text-center"><input type="checkbox" defaultChecked={true} /></td>
-                                <td>
-                                    <button onClick={this.handleDeleteModal} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                    <button className="btn p-0 text-success btn-link btn-small mr-3">Ubah</button>
-                                    <button className="btn p-0 text-info btn-link btn-small">Lihat</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="form-check">
-                                        <input className="form-check-input" type="checkbox" value="" id="3" />
-                                        <label className="form-check-label" htmlFor="3">
-                                            ABC Extra Pedas 135ml
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>Bumbu Masak</td>
-                                <td className="text-right">Rp. 9,500</td>
-                                <td className="text-center">500</td>
-                                <td className="text-center"><input type="checkbox" defaultChecked={true} /></td>
-                                <td>
-                                    <button onClick={this.handleDeleteModal} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                    <button className="btn p-0 text-success btn-link btn-small mr-3">Ubah</button>
-                                    <button className="btn p-0 text-info btn-link btn-small">Lihat</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="form-check">
-                                        <input className="form-check-input" type="checkbox" value="" id="4" />
-                                        <label className="form-check-label" htmlFor="4">
-                                            ABC Kecap Extra Pedas 135ml
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>Bumbu Masak</td>
-                                <td className="text-right">Rp. 10,500</td>
-                                <td className="text-center">120</td>
-                                <td className="text-center"><input type="checkbox" defaultChecked={true} /></td>
-                                <td>
-                                    <button onClick={this.handleDeleteModal} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                    <button className="btn p-0 text-success btn-link btn-small mr-3">Ubah</button>
-                                    <button className="btn p-0 text-info btn-link btn-small">Lihat</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="form-check">
-                                        <input className="form-check-input" type="checkbox" value="" id="5" />
-                                        <label className="form-check-label" htmlFor="5">
-                                            ABC Kecap Manis 135ml
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>Bumbu Masak</td>
-                                <td className="text-right">Rp. 1,500</td>
-                                <td className="text-center">120</td>
-                                <td className="text-center"><input type="checkbox" defaultChecked={true} /></td>
-                                <td>
-                                    <button onClick={this.handleDeleteModal} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                    <button className="btn p-0 text-success btn-link btn-small mr-3">Ubah</button>
-                                    <button className="btn p-0 text-info btn-link btn-small">Lihat</button>
-                                </td>
-                            </tr>
+                            {
+                                fetching ? (
+                                    <tr>
+                                        <td className="text-center" colSpan="6"><i className="mdi mdi-loading mdi-spin mr-2"></i>Loading ...</td>
+                                    </tr>
+
+                                ) : products && products.length > 0 ? products.map(product => {
+                                        return (
+                                            <tr key={product._id}>
+                                                <td>
+                                                    <div className="form-check mt-0">
+                                                        <input className="form-check-input" id={product._id} onClick={this.handleSelected} value={product._id} type="checkbox" defaultChecked={product.selected ? true : false} />
+                                                        <label className="form-check-label" htmlFor={product._id}>
+                                                            {product.name}
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>{product.category && product.category.name}</td>
+                                                <td className="text-right">{product.price_formatted}</td>
+                                                <td className="text-center">{product.stock.amount} {product.unit && product.unit.name} </td>
+                                                <td className="text-center"><input onClick={this.handleActive} value={product._id} type="checkbox" defaultChecked={product.deleted_at ? false : true} /></td>
+                                                <td>
+                                                    <button onClick={() => this.handleDeleteModal(product._id)} className="btn p-0 text-danger btn-link btn-sm mr-3">Hapus</button>
+                                                    <Link to={`/product/edit/${product._id}`} className="btn p-0 text-success btn-link btn-sm mr-3">Ubah</Link>
+                                                    <Link to={`/product/view/${product._id}`} className="btn p-0 text-info btn-link btn-sm">Lihat</Link>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                
+                                : (
+                                    <tr>
+                                        <td className="text-center" colSpan="6">Belum ada data</td>
+                                    </tr>
+                                )
+                                
+                            }
                         </Table>
                         <hr/>
                     </div>
 
+                    
+
                     <div className="col-md-6 mt-2">
-                        <p>Menampilkan 1 s/d 5 dari 1,290 data</p>
-                        <nav aria-label="Page navigation example">
-                            <ul className="pagination">
-                                <li className="page-item">
-                                <a className="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                                </li>
-                                <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                <li className="page-item disabled"><a className="page-link" href="#">...</a></li>
-                                <li className="page-item"><a className="page-link" href="#">625</a></li>
-                                <li className="page-item">
-                                <a className="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                                </li>
-                            </ul>
-                        </nav>
+
+                        { data && data.total > 1 && (
+                            <p>Menampilkan { data && data.from.toLocaleString() } s/d { data && data.to.toLocaleString() } dari { data && data.total.toLocaleString() } data</p>
+                        )}
+
+                        {
+                            data && data.total > 1 && (
+                                <nav aria-label="Page navigation example">
+                                    <ul className="pagination">
+
+                                        { data.current_page > 1 && <li key="prev" className="page-item"><button onClick={ () => this.handleClickPage(data.current_page - 1) } className="page-link">Prev</button></li> }
+
+                                        {
+                                            data.pages.map((page, index) => {
+                                                return (
+                                                    
+                                                    <li key={index} className={`page-item ${page === '...' ? 'disabled' : '' } ${page === data.current_page ? 'active' : '' }`}><button onClick={ () => this.handleClickPage(page)} className="page-link">{page}</button></li>
+                                                    
+                                                )
+                                            })
+                                        }
+
+                                        { data.current_page < data.last_page && <li key="next" className="page-item"><button onClick={() => this.handleClickPage(data.current_page + 1)} className="page-link">Next</button></li> }
+
+
+                                    </ul>
+                                </nav>
+                            )
+                        }
+
                     </div>
 
                     <div className="col-md-6 mt-2 text-right">
                         <div className="d-flex justify-content-end">
                             <div className="form-group">
                                 <label className="control-label">Tampilkan data perhalaman</label>
-                                <select className="form-control">
+                                <select className="form-control" onChange={this.handleChangeSelect('perpage')}>
                                     <option value="5">5</option>
                                     <option value="10">10</option>
                                     <option value="15">15</option>
@@ -310,4 +609,28 @@ export class Product extends Component {
     }
 }
 
-export default Product
+const mapStateToProps = (state) => {
+    return {
+        fetching: state.product.fetching,
+        error: state.product.error,
+        data: state.product.data,
+        type: state.product.type,
+        success: state.product.success,
+        message: state.product.message,
+        uploading: state.product.uploading,
+        selected: state.product.selected,
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        fetchProduct: (params) => dispatch(fetchProduct(params)),
+        toggleProduct: (id) => dispatch(toggleProduct(id)),
+        deleteProduct: (id) => dispatch(deleteProduct(id)),
+        importProduct: (id) => dispatch(importProduct(id)),
+        selectProduct: (id) => dispatch(selectProduct(id))
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(Product))

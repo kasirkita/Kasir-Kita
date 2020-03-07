@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { Line } from 'react-chartjs-2'
+import { Redirect } from 'react-router-dom'
 
 const data = {
     labels: ['07:00', '08:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
@@ -22,6 +23,8 @@ const data = {
 
 export class Dashboard extends Component {
     render() {
+        if (!sessionStorage.getItem('token'))
+            return <Redirect to="/login" />
         return (
             <Fragment>
                 <div className="row p-3"> 
