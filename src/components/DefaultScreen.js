@@ -40,7 +40,7 @@ export class DefaultScreen extends Component {
                             <li>
                                 <NavLink className="nav-link" to="/cashier"><i className="mdi mdi-desktop-classic mr-2"></i> Kasir</NavLink>
                             </li>
-                            <li className={`dropdown ${ path === 'product' || path === 'category' ? 'dropdown-active' : ''}`}>
+                            <li className={`dropdown ${ path === 'product' || path === 'category' || path === 'unit' ? 'dropdown-active' : ''}`}>
                                 <a className="nav-link dropdown-toggle pointer" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i className="mdi mdi-calendar-text mr-2"></i> Barang 
                                 </a>

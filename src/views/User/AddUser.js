@@ -107,7 +107,7 @@ export class AddUser extends Component {
                     <div className="col-md-6 mt-3">
                         <div className="form-group">
                             <label className="control-label">Photo</label>
-                            <input type="file" className="form-control"/>
+                            <input onChange={e => console.log(e.target.files[0])} type="file" className="form-control"/>
                         </div>
                         
                         <div className="row">

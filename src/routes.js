@@ -32,6 +32,7 @@ import AddDiscount from './views/Discount/AddDiscount';
 import Welcome from './views/Welcome';
 import EditProduct from './views/Product/EditProduct';
 import ViewProduct from './views/Product/ViewProduct';
+import Unit from './views/Unit/Unit';
 
 export default [
     {
@@ -87,6 +88,12 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: Category
+    },
+    {
+        path: '/unit',
+        exact: true,
+        layout: DefaultScreen,
+        component: Unit
     },
     {
         path: '/sales',

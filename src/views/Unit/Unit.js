@@ -3,10 +3,10 @@ import Table from '../../components/Table';
 import Modal from 'react-bootstrap4-modal';
 import Error from '../Errors/Error';
 import { withToastManager } from 'react-toast-notifications'
-import { fetchCategory, toggleCategory, deleteCategory, saveCategory, updateCategory, getCategory } from '../../store/actions/CategoryActions'
+import { fetchUnit, toggleUnit, deleteUnit, saveUnit, updateUnit, getUnit } from '../../store/actions/UnitActions'
 import { connect } from 'react-redux'
 
-class Category extends Component {
+class Unit extends Component {
 
     state = {
         ordering: {
@@ -21,7 +21,7 @@ class Category extends Component {
         deletedId: '',
         updatedId: '',
         filter: 'all',
-        title: 'Tambah kategori baru',
+        title: 'Tambah satuan baru',
         name: ''
     }
 
@@ -42,7 +42,7 @@ class Category extends Component {
             filter
         } = this.state
 
-        this.props.fetchCategory({
+        this.props.fetchUnit({
             ordering,
             keyword,
             page,
@@ -62,7 +62,7 @@ class Category extends Component {
             filter
         } = this.state
     
-        this.props.fetchCategory({
+        this.props.fetchUnit({
             ordering: {
                 type: type,
                 sort: sort === 'asc' ? 'desc' : 'asc'
@@ -91,7 +91,7 @@ class Category extends Component {
     }
 
     handleDelete = () => {
-        this.props.deleteCategory(this.state.deletedId)
+        this.props.deleteUnit(this.state.deletedId)
     }
 
     handleCloseDeleteModal = () => {
@@ -112,7 +112,7 @@ class Category extends Component {
         this.setState({
             ...this.state,
             createModal: false,
-            title: 'Tambah kategori baru',
+            title: 'Tambah satuan baru',
             name: '',
             updatedId: ''
         })
@@ -130,7 +130,7 @@ class Category extends Component {
 
         
     
-        this.props.fetchCategory({
+        this.props.fetchUnit({
             keyword,
             page,
             perpage,
@@ -154,7 +154,7 @@ class Category extends Component {
             filter
         } = this.state
 
-        this.props.fetchCategory({
+        this.props.fetchUnit({
             ordering,
             keyword,
             page,
@@ -170,26 +170,26 @@ class Category extends Component {
 
     handleActive = (e) => {
         const value = e.target.value
-        this.props.toggleCategory(value)
+        this.props.toggleUnit(value)
         
     }
 
     handleUpdate = (id) => {
 
-        this.props.getCategory(id)
+        this.props.getUnit(id)
         
         this.setState({
             ...this.state,
-            title: 'Ubah kategori',
+            title: 'Ubah satuan',
             createModal: true
         })
     }
 
     handleSubmit = () => {
         if (this.state.updatedId) {
-            this.props.updateCategory(this.state.updatedId, this.state)
+            this.props.updateUnit(this.state.updatedId, this.state)
         } else {
-            this.props.saveCategory(this.state)
+            this.props.saveUnit(this.state)
         }
     }
 
@@ -211,7 +211,7 @@ class Category extends Component {
                         deleteModal: false
                     })
                     
-                    this.props.fetchCategory(this.state)
+                    this.props.fetchUnit(this.state)
 
                 } else {
 
@@ -232,7 +232,7 @@ class Category extends Component {
                     })
 
                     this.handleCloseCreateModal()
-                    this.props.fetchCategory(this.state)
+                    this.props.fetchUnit(this.state)
 
                 } else {
 
@@ -253,7 +253,7 @@ class Category extends Component {
                     })
 
                     this.handleCloseCreateModal()
-                    this.props.fetchCategory(this.state)
+                    this.props.fetchUnit(this.state)
 
                 } else {
 
@@ -266,11 +266,11 @@ class Category extends Component {
             }
         }
 
-        if (this.props.category !== prevProps.category) {
+        if (this.props.unit !== prevProps.unit) {
             this.setState({
                 ...this.state,
-                updatedId: this.props.category._id,
-                name: this.props.category.name
+                updatedId: this.props.unit._id,
+                name: this.props.unit.name
             })
         }
 
@@ -286,7 +286,7 @@ class Category extends Component {
             filter
         } = this.state
     
-        this.props.fetchCategory({
+        this.props.fetchUnit({
             ordering,
             keyword,
             page,
@@ -316,7 +316,7 @@ class Category extends Component {
                 <div className="row p-3"> 
 
                     <div className="col-md-12">
-                        <h1>Kategori</h1>
+                        <h1>Satuan</h1>
                         <hr/>
                     </div>
 
@@ -325,10 +325,10 @@ class Category extends Component {
                     <Modal visible={deleteModal} dialogClassName="modal-sm" onClickBackdrop={this.handleCloseDeleteModal}>
                         <button className="btn btn-outline-secondary border-0 m-3 btn-close-modal" onClick={this.handleCloseDeleteModal}>&times;</button>
                         <div className="modal-header">
-                            <h5 className="modal-title">Hapus kategori</h5>
+                            <h5 className="modal-title">Hapus satuan</h5>
                         </div>
                         <div className="modal-body">
-                            <p>Apakah anda yakin? Harap berhati-hati, data yang di hapus tidak bisa di kembalikan, gunakan opsi jangan centang aktif untuk menonaktifkan kategori</p>
+                            <p>Apakah anda yakin? Harap berhati-hati, data yang di hapus tidak bisa di kembalikan, gunakan opsi jangan centang aktif untuk menonaktifkan satuan</p>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={this.handleCloseDeleteModal}><i className="mdi mdi-close mr-2"></i>Tutup</button>
@@ -336,7 +336,7 @@ class Category extends Component {
                         </div>
                     </Modal>
 
-                    {/* add category modal */}
+                    {/* add unit modal */}
 
                     <Modal visible={createModal} dialogClassName="modal-md" onClickBackdrop={this.handleCloseCreateModal}>
                         <button className="btn btn-outline-secondary border-0 m-3 btn-close-modal" onClick={this.handleCloseCreateModal}>&times;</button>
@@ -347,7 +347,7 @@ class Category extends Component {
                             <form>
                                 <div className="form-group">
                                     <label className="control-label">Nama</label>
-                                    <input type="text" value={name} onChange={this.handleChange('name')} className={`form-control ${validate && validate.name ? 'is-invalid' : ''}`} placeholder="Nama kategori" />
+                                    <input type="text" value={name} onChange={this.handleChange('name')} className={`form-control ${validate && validate.name ? 'is-invalid' : ''}`} placeholder="Nama satuan" />
                                     {
                                         validate && validate.name && (
                                             <div className="invalid-feedback">{ validate.name[0] }</div>
@@ -402,14 +402,14 @@ class Category extends Component {
                                         <td className="text-center" colSpan="6"><i className="mdi mdi-loading mdi-spin mr-2"></i>Loading ...</td>
                                     </tr>
 
-                                ) : categories && categories.length > 0 ? categories.map(category => {
+                                ) : categories && categories.length > 0 ? categories.map(unit => {
                                     return (
-                                        <tr key={category._id}>
-                                            <td>{ category.name }</td>
-                                            <td className="text-center"><input type="checkbox" value={category._id} onClick={this.handleActive} defaultChecked={category.deleted_at ? false : true } /></td>
+                                        <tr key={unit._id}>
+                                            <td>{ unit.name }</td>
+                                            <td className="text-center"><input type="checkbox" value={unit._id} onClick={this.handleActive} defaultChecked={unit.deleted_at ? false : true } /></td>
                                             <td>
-                                                <button onClick={() => this.handleDeleteModal(category._id)} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                                <button onClick={() => this.handleUpdate(category._id)} className="btn p-0 text-success btn-link btn-small">Ubah</button>
+                                                <button onClick={() => this.handleDeleteModal(unit._id)} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
+                                                <button onClick={() => this.handleUpdate(unit._id)} className="btn p-0 text-success btn-link btn-small">Ubah</button>
                                             </td>
                                         </tr>
                                     )
@@ -480,25 +480,25 @@ class Category extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        fetching: state.category.fetching,
-        error: state.category.error,
-        data: state.category.data,
-        type: state.category.type,
-        success: state.category.success,
-        message: state.category.message,
-        category: state.category.category
+        fetching: state.unit.fetching,
+        error: state.unit.error,
+        data: state.unit.data,
+        type: state.unit.type,
+        success: state.unit.success,
+        message: state.unit.message,
+        unit: state.unit.unit
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchCategory: (params) => dispatch(fetchCategory(params)),
-        toggleCategory: (id) => dispatch(toggleCategory(id)),
-        deleteCategory: (id) => dispatch(deleteCategory(id)),
-        saveCategory: (data) => dispatch(saveCategory(data)),
-        getCategory: (id) => dispatch(getCategory(id)),
-        updateCategory: (id, data) => dispatch(updateCategory(id, data)),
+        fetchUnit: (params) => dispatch(fetchUnit(params)),
+        toggleUnit: (id) => dispatch(toggleUnit(id)),
+        deleteUnit: (id) => dispatch(deleteUnit(id)),
+        saveUnit: (data) => dispatch(saveUnit(data)),
+        getUnit: (id) => dispatch(getUnit(id)),
+        updateUnit: (id, data) => dispatch(updateUnit(id, data)),
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(Category))
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(Unit))
