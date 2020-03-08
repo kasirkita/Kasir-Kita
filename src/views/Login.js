@@ -58,6 +58,14 @@ export class Login extends Component {
         this.props.login(this.state)
     }
 
+    handleReset = () => {
+        this.setState({
+            agree: false,
+            email: '',
+            password: ''
+        })
+    }
+
     render() {
 
         const { 
@@ -113,7 +121,7 @@ export class Login extends Component {
                                         <button className="btn btn-primary mr-2" type="submit"><i className="mdi mdi-lock mr-2"></i>Masuk</button>
                                     ) 
                                 }
-                                <button className="btn btn-secondary">Reset</button>
+                                <button type="reset" onClick={this.handleReset} className="btn btn-secondary"><i className="mdi mdi-reload mr-2"></i>Reset</button>
                             </div>
                         </form>
                     </div>

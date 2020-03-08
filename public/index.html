@@ -47,5 +47,28 @@
     <script src="%PUBLIC_URL%/assets/js/jquery-3.4.1.slim.min.js"></script>
     <script src="%PUBLIC_URL%/assets/js/popper.min.js"></script>
     <script src="%PUBLIC_URL%/assets/js/bootstrap.min.js"></script>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-analytics.js"></script>
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyBPbpYTVF951btH9aG_QjCwWZwh4BQLFoE",
+        authDomain: "kasir-kita-1190d.firebaseapp.com",
+        databaseURL: "https://kasir-kita-1190d.firebaseio.com",
+        projectId: "kasir-kita-1190d",
+        storageBucket: "kasir-kita-1190d.appspot.com",
+        messagingSenderId: "24965682990",
+        appId: "1:24965682990:web:33353b73f54da17432ccbf",
+        measurementId: "G-DL6RWQC5P7"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    </script>
   </body>
 </html>
