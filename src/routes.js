@@ -37,6 +37,7 @@ import EditRole from './views/Role/EditRole';
 import ViewRole from './views/Role/ViewRole';
 import EditUser from './views/User/EditUser';
 import ViewUser from './views/User/ViewUser';
+import EditCustomer from './views/Customer/EditCustomer';
 
 export default [
     {
@@ -170,6 +171,12 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: AddCustomer
+    },
+    {
+        path: '/customer/edit/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: EditCustomer
     },
     {
         path: '/supplier',

@@ -2,6 +2,10 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import Table from '../../components/Table'
 import Modal from 'react-bootstrap4-modal'
+import { fetchCustomer, toggleCustomer, deleteCustomer } from '../../store/actions/CustomerActions'
+import { connect } from 'react-redux'
+import { withToastManager } from 'react-toast-notifications'
+import Error from '../Errors/Error'
 
 class Customer extends Component {
 
@@ -10,12 +14,90 @@ class Customer extends Component {
             type: 'name',
             sort: 'asc'
         },
-        deleteModal: false
+        modal: false,
+        deleteModal: false,
+        keyword: '',
+        page: 1,
+        perpage: 10,
+        deletedId: '',
+        filter: 'all'
+    }
+
+    handleChange = (name) => (e) => {
+        this.setState({
+            ...this.state,
+            [name]: e.target.value
+        })
+    }
+
+    handleChangeSelect = (name) => (e) => {
+
+        const {
+            keyword,
+            page,
+            perpage,
+            ordering,
+            filter
+        } = this.state
+
+        
+    
+        this.props.fetchCustomer({
+            keyword,
+            page,
+            perpage,
+            ordering,
+            filter,
+            [name]: e.target.value
+        })
+
+        this.setState({
+			...this.state,
+           [name]: e.target.value
+        })
+    }
+
+    handleSearch = () => {
+
+        const {
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
+        } = this.state
+
+        this.props.fetchCustomer({
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
+        })
     }
 
     handleSorting = (e) => {
         const type = e.target.id
         const sort = this.state.ordering.sort
+
+        const {
+            keyword,
+            page,
+            perpage,
+            filter
+        } = this.state
+    
+        this.props.fetchCustomer({
+            ordering: {
+                type: type,
+                sort: sort === 'asc' ? 'desc' : 'asc'
+            },
+            keyword,
+            page,
+            perpage,
+            filter
+        })
+
         this.setState({
 			...this.state,
             ordering: {
@@ -25,22 +107,125 @@ class Customer extends Component {
         })
     }
 
-    handleDeleteModal = () => {
+    handleModal = () => {
         this.setState({
             ...this.state,
-            deleteModal: true
+            modal: true
+        })
+    }
+
+    handleCloseModal = () => {
+        this.setState({
+            ...this.state,
+            modal: false
+        })
+    }
+
+    handleDeleteModal = (id) => {
+        this.setState({
+            ...this.state,
+            deleteModal: true,
+            deletedId: id
         })
     }
 
     handleCloseDeleteModal = () => {
         this.setState({
             ...this.state,
-            deleteModal: false
+            deleteModal: false,
+            deletedId: ''
+        })
+    }
+
+    handleDelete = () => {
+        this.props.deleteCustomer(this.state.deletedId)
+    }
+
+    handleClickPage = (page) => {
+
+        const {
+            ordering,
+            keyword,
+            perpage,
+            filter
+        } = this.state
+
+        this.props.fetchCustomer({
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
+        })
+
+        this.setState({
+            ...this.state,
+            page
+        })
+    }
+
+    handleActive = (e) => {
+        const value = e.target.value
+        this.props.toggleCustomer(value)
+        
+    }
+
+    componentDidUpdate = (prevProps) => {
+
+        const { toastManager } = this.props;
+
+        if (prevProps.type !== this.props.type) {
+            if (this.props.type === 'delete') {
+                if (this.props.success) {
+
+                    toastManager.add(this.props.message, {
+                        appearance: 'success',
+                        autoDismiss: true
+                    })
+
+                    this.setState({
+                        ...this.state,
+                        deleteModal: false
+                    })
+                    
+                    this.props.fetchCustomer(this.state)
+
+                } else {
+
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    })
+
+                }
+            }
+        }
+    }
+
+    componentDidMount = () => {
+
+        const {
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
+        } = this.state
+    
+        this.props.fetchCustomer({
+            ordering,
+            keyword,
+            page,
+            perpage,
+            filter
         })
     }
 
     render() {
-        const { ordering, deleteModal } = this.state;
+
+        const { ordering, modal, deleteModal, downloading, printing, perpage } = this.state
+        const { data, fetching, error, uploading, selected } = this.props
+        const customers = data && data.data
 
         const theads = [
             { name: 'name', value: 'Nama', sortable: true },
@@ -50,6 +235,10 @@ class Customer extends Component {
             { name: 'is_active', value: 'Aktif', sortable: false },
             { name: 'options', value: 'Opsi', sortable: false }
         ];
+
+        if (error && error.status !== 422)
+            return <Error title={error.statusText} message={error.data.message} code={error.status} connection={error.connection} />
+            
         return (
             <Fragment>
                 <div className="row p-3"> 
@@ -66,7 +255,7 @@ class Customer extends Component {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={this.handleCloseDeleteModal}><i className="mdi mdi-close mr-2"></i>Tutup</button>
-                            <button type="button" className="btn btn-primary"><i className="mdi mdi-alert mr-2"></i>Hapus data</button>
+                            <button type="button" className="btn btn-primary" onClick={this.handleDelete}><i className="mdi mdi-alert mr-2"></i>Hapus data</button>
                         </div>
                     </Modal>
                 
@@ -86,18 +275,18 @@ class Customer extends Component {
                                 <div className="d-flex justify-content-end">
                                     <div className="form-group mr-4">
                                         <label className="control-label">Filter</label>
-                                        <select className="form-control">
+                                        <select className="form-control" onChange={this.handleChangeSelect('filter')}>
                                             <option value="all">Semua</option>
                                             <option value="active">Hanya yang aktif</option>
-                                            <option value="inactiv">Hanya yang tidak aktif</option>
+                                            <option value="inactive">Hanya yang tidak aktif</option>
                                         </select>
                                     </div>
                                     <div className="form-group">
                                         <label className="control-label">Pencarian</label>
                                         <div className="input-group mb-3">
-                                            <input type="text" className="form-control" placeholder="Kata kunci"/>
+                                            <input type="text" className="form-control" placeholder="Kata kunci" onKeyPress={(e) => (e.key === 'Enter') && this.handleSearch() } onChange={this.handleChange('keyword')} />
                                             <div className="input-group-prepend">
-                                                <button className="btn btn-secondary" type="button"><i className="mdi mdi-magnify"></i></button>
+                                                <button className="btn btn-secondary" type="button" onClick={this.handleSearch}><i className="mdi mdi-magnify"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -108,63 +297,77 @@ class Customer extends Component {
 
                     <div className="col-md-12 mt-3">
                         <Table theads={theads} ordering={ordering} handleSorting={this.handleSorting}>
-                            <tr>
-                                <td>Yulianto Saparudin</td>
-                                <td>Pengecer</td>
-                                <td>yulianto.saparudin@gmail.com</td>
-                                <td>089611081675</td>
-                                <td className="text-center"><input type="checkbox" defaultChecked={true} /></td>
-                                <td>
-                                    <button onClick={this.handleDeleteModal} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                    <button className="btn p-0 text-success btn-link btn-small mr-3">Ubah</button>
-                                    <button className="btn p-0 text-info btn-link btn-small">Lihat</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Anthonio Joseph</td>
-                                <td>Grosir</td>
-                                <td>anthoniojoseph1919@gmail.com</td>
-                                <td>085229549820</td>
-                                <td className="text-center"><input type="checkbox" defaultChecked={true} /></td>
-                                <td>
-                                    <button className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                    <button className="btn p-0 text-success btn-link btn-small mr-3">Ubah</button>
-                                    <button className="btn p-0 text-info btn-link btn-small">Lihat</button>
-                                </td>
-                            </tr>
+                        {
+                                fetching ? (
+                                    <tr>
+                                        <td className="text-center" colSpan="6"><i className="mdi mdi-loading mdi-spin mr-2"></i>Loading ...</td>
+                                    </tr>
+
+                                ) : customers && customers.length > 0 ? customers.map(customer => {
+                                    return (
+                                        <tr>
+                                            <td>{customer.name}</td>
+                                            <td>{customer.type_name}</td>
+                                            <td>{customer.email}</td>
+                                            <td>{customer.phone_number}</td>
+                                            <td className="text-center"><input onClick={this.handleActive} value={customer._id} type="checkbox" defaultChecked={customer.deleted_at ? false : true} /></td>
+                                            <td>
+                                                <button onClick={() => this.handleDeleteModal(customer._id)} className="btn p-0 text-danger btn-link btn-sm mr-3">Hapus</button>
+                                                <Link to={`/customer/edit/${customer._id}`} className="btn p-0 text-success btn-link btn-sm mr-3">Ubah</Link>
+                                            </td>
+                                        </tr>
+                                    )
+                                    
+                                })
+                            
+                            : (
+                                <tr>
+                                    <td className="text-center" colSpan="6">Belum ada data</td>
+                                </tr>
+                            )
+                            
+                        }
                            
                         </Table>
                         <hr/>
                     </div>
 
                     <div className="col-md-6 mt-2">
-                        <p>Menampilkan 1 s/d 5 dari 1,290 data</p>
-                        <nav aria-label="Page navigation example">
-                            <ul className="pagination">
-                                <li className="page-item">
-                                <a className="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                                </li>
-                                <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                <li className="page-item disabled"><a className="page-link" href="#">...</a></li>
-                                <li className="page-item"><a className="page-link" href="#">625</a></li>
-                                <li className="page-item">
-                                <a className="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                                </li>
-                            </ul>
-                        </nav>
+                        { data && data.total > 1 && (
+                                <p>Menampilkan { data && data.from.toLocaleString() } s/d { data && data.to.toLocaleString() } dari { data && data.total.toLocaleString() } data</p>
+                            )}
+
+                            {
+                                data && data.total > 1 && (
+                                    <nav aria-label="Page navigation example">
+                                        <ul className="pagination">
+
+                                            { data.current_page > 1 && <li key="prev" className="page-item"><button onClick={ () => this.handleClickPage(data.current_page - 1) } className="page-link">Prev</button></li> }
+
+                                            {
+                                                data.pages.map((page, index) => {
+                                                    return (
+                                                        
+                                                        <li key={index} className={`page-item ${page === '...' ? 'disabled' : '' } ${page === data.current_page ? 'active' : '' }`}><button onClick={ () => this.handleClickPage(page)} className="page-link">{page}</button></li>
+                                                        
+                                                    )
+                                                })
+                                            }
+
+                                            { data.current_page < data.last_page && <li key="next" className="page-item"><button onClick={() => this.handleClickPage(data.current_page + 1)} className="page-link">Next</button></li> }
+
+
+                                        </ul>
+                                    </nav>
+                                )
+                            }
                     </div>
 
                     <div className="col-md-6 mt-2 text-right">
                         <div className="d-flex justify-content-end">
                             <div className="form-group">
                                 <label className="control-label">Tampilkan data perhalaman</label>
-                                <select className="form-control">
+                                <select className="form-control" value={perpage} className="form-control" onChange={this.handleChangeSelect('perpage')}>
                                     <option value="5">5</option>
                                     <option value="10">10</option>
                                     <option value="15">15</option>
@@ -180,4 +383,24 @@ class Customer extends Component {
     }
 }
 
-export default Customer
+const mapStateToProps = (state) => {
+    return {
+        fetching: state.customer.fetching,
+        error: state.customer.error,
+        data: state.customer.data,
+        type: state.customer.type,
+        success: state.customer.success,
+        message: state.customer.message,
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        fetchCustomer: (params) => dispatch(fetchCustomer(params)),
+        toggleCustomer: (id) => dispatch(toggleCustomer(id)),
+        deleteCustomer: (id) => dispatch(deleteCustomer(id)),
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(Customer))

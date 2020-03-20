@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import Select from 'react-select';
-import { saveCustomer } from '../../store/actions/CustomerActions';
+import { updateCustomer, getCustomer } from '../../store/actions/CustomerActions';
 import Error from '../Errors/Error';
 import { connect } from 'react-redux';
 import { withToastManager } from 'react-toast-notifications';
 
-class AddCustomer extends Component {
+class EditCustomer extends Component {
 
     state = {
         name: '',
@@ -18,7 +18,7 @@ class AddCustomer extends Component {
     }
 
     handleSave = () => {
-        this.props.saveCustomer(this.state)
+        this.props.updateCustomer(this.props.match.params.id, this.state)
     }
 
     handleReset = () => {
@@ -60,9 +60,9 @@ class AddCustomer extends Component {
 
     componentDidUpdate = (prevProps) => {
        
+        const { toastManager } = this.props;
         if (prevProps.type !== this.props.type) {
-            if (this.props.type === 'save') {
-                const { toastManager } = this.props;
+            if (this.props.type === 'update') {
                 
                 if (this.props.success) {
     
@@ -81,7 +81,41 @@ class AddCustomer extends Component {
                     });
                 }
             }
+
+            if (this.props.type === 'get') {
+
+                if (this.props.success) {
+
+                    
+                    if (this.props.customer !== prevProps.customer) {
+                        
+                        const { customer } = this.props
+
+                        this.setState({
+                            ...this.state,
+                            name: customer.name, 
+                            email: customer.email, 
+                            phone_number: customer.phone_number, 
+                            type_label: customer.type_label, 
+                            type_value: customer.type_value, 
+                            address: customer.address, 
+                        })
+                    }
+    
+                } else {
+    
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    });
+                }
+
+            }
         }
+    }
+
+    componentDidMount(){
+        this.props.getCustomer(this.props.match.params.id)
     }
 
     render() {
@@ -109,7 +143,7 @@ class AddCustomer extends Component {
                     <div className="col-md-12">
                         <div className="row">
                             <div className="col-md-8">
-                                <h1>Tambah Pelanggan</h1>
+                                <h1>Ubah Pelanggan</h1>
                             </div>
                             <div className="col-md-4 text-right">
                                 <Link className="btn btn-secondary" to="/customer"><i className="mdi mdi-arrow-left mr-2"></i>Kembali</Link>
@@ -183,9 +217,9 @@ class AddCustomer extends Component {
                     <hr/>
                     {
                         fetching ? (
-                            <button className="btn btn-primary btn-disabled mr-2" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Simpan</button>
+                            <button className="btn btn-primary btn-disabled mr-2" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Simpan Perubahan</button>
                         ) : (
-                            <button className="btn btn-primary mr-2" onClick={this.handleSave}><i className="mdi mdi-content-save mr-2"></i>Simpan</button>
+                            <button className="btn btn-primary mr-2" onClick={this.handleSave}><i className="mdi mdi-content-save mr-2"></i>Simpan Perubahan</button>
                         )
                     }
                     <button className="btn btn-secondary" onClick={this.handleReset}><i className="mdi mdi-reload mr-2"></i>Reset</button>
@@ -202,14 +236,16 @@ const mapStateToProps = state => {
         fetching: state.customer.fetching,
         error: state.customer.error,
         success: state.customer.success,
-        type: state.customer.type
+        type: state.customer.type,
+        customer: state.customer.customer
     }    
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveCustomer: data => dispatch(saveCustomer(data))
+        updateCustomer: (id, data) => dispatch(updateCustomer(id, data)),
+        getCustomer: id => dispatch(getCustomer(id))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(AddCustomer))
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(EditCustomer))
