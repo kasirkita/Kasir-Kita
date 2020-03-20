@@ -5,6 +5,9 @@ import loginReducer from "./loginReducer"
 import productReducer from "./productReducer"
 import categoryReducer from "./categoryReducer"
 import unitReducer from "./unitReducer"
+import roleReducer from "./roleReducer"
+import permissionReducer from "./permissionReducer"
+import userReducer from "./userReducer"
 
 const rootReducer = combineReducers({
     checkUser: checkUserReducer,
@@ -12,7 +15,10 @@ const rootReducer = combineReducers({
     login: loginReducer,
     product: productReducer,
     category: categoryReducer,
-    unit: unitReducer
+    unit: unitReducer,
+    role: roleReducer,
+    permission: permissionReducer,
+    user: userReducer
 })
 
 export default rootReducer

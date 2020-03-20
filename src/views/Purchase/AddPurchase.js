@@ -6,7 +6,7 @@ import Select from 'react-select'
 import AddProduct from '../Product/AddProduct'
 import Modal from 'react-bootstrap4-modal'
 
-export class AddPurchase extends Component {
+class AddPurchase extends Component {
 
     state = {
         payment_date: new Date(),

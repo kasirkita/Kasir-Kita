@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker'
 import '../../../node_modules/react-datepicker/dist/react-datepicker.css'
 import Select from 'react-select'
 
-export class AddExpense extends Component {
+class AddExpense extends Component {
 
     state = {
         payment_date: new Date(),

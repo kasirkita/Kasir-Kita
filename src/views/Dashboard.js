@@ -21,7 +21,7 @@ const data = {
     }]
 }
 
-export class Dashboard extends Component {
+class Dashboard extends Component {
     render() {
         if (!sessionStorage.getItem('token'))
             return <Redirect to="/login" />

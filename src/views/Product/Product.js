@@ -11,7 +11,7 @@ import Axios from 'axios'
 import { url } from '../../global'
 import fileDownload from 'js-file-download'
 
-export class Product extends Component {
+class Product extends Component {
 
     state = {
         ordering: {

@@ -5,7 +5,7 @@ import Error from './Errors/Error'
 import Loading from '../components/Loading'
 import {withToastManager} from 'react-toast-notifications'
 
-export class Welcome extends Component {
+class Welcome extends Component {
 
     state = {
         agree: false,

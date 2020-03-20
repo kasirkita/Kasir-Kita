@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-export class FullScreen extends Component {
+class FullScreen extends Component {
     render() {
         return (
             <div className="container">

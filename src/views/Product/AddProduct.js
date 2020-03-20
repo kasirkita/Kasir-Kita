@@ -138,7 +138,7 @@ class AddProduct extends Component {
                             <label className="control-label">Kode <span className="text-danger">*</span></label>
                             <input type="text" className={`form-control ${ validate && validate.code && 'is-invalid'}`} onChange={this.handleChange('code')} value={code} placeholder="Kode Barang"/>
                             {
-                                validate && validate.code > 0 && (
+                                validate && validate.code  && (
                                     <div className="invalid-feedback">{ validate.code[0] }</div>
                                 )
                             }
@@ -257,7 +257,7 @@ const getCategoryList = (inputValue, callback) => {
      }).then(response => {
         callback(filterCategoryList(response.data.data));
      })
- }
+}
 
 const filterUnitList = (units) => {
     const options = units.map(unit => {

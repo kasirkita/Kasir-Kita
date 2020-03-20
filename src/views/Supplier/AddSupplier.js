@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
-export class AddSupplier extends Component {
+class AddSupplier extends Component {
 
     render() {
         return (

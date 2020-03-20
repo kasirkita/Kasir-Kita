@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { getProduct } from '../../store/actions/ProductActions'
 import { connect } from 'react-redux'
 
-export class ViewProduct extends Component {
+class ViewProduct extends Component {
     componentDidMount() {
         this.props.getProduct(this.props.match.params.id)
     }

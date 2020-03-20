@@ -5,12 +5,13 @@ import DatePicker from 'react-datepicker'
 import '../../../node_modules/react-datepicker/dist/react-datepicker.css'
 import { url } from '../../global';
 import Axios from 'axios';
-import { saveUser } from '../../store/actions/UserActions';
+import { updateUser, getUser } from '../../store/actions/UserActions';
 import { connect } from 'react-redux';
 import { withToastManager } from 'react-toast-notifications'
 import Error from '../Errors/Error';
+import moment from 'moment';
 
-class AddUser extends Component {
+class EditUser extends Component {
 
     state = {
         date_of_birth: null,
@@ -91,15 +92,15 @@ class AddUser extends Component {
     }
 
     handleSave = () => {
-        this.props.saveUser(this.state)
-        // console.log(this.state)
+        this.props.updateUser(this.props.match.params.id, this.state)
     }
 
     componentDidUpdate = (prevProps) => {
        
+        const { toastManager } = this.props;
+
         if (prevProps.type !== this.props.type || prevProps.success !== this.props.success) {
-            if (this.props.type === 'save') {
-                const { toastManager } = this.props;
+            if (this.props.type === 'update') {
                 
                 if (this.props.success) {
     
@@ -118,7 +119,44 @@ class AddUser extends Component {
                     });
                 }
             }
+
+            if (this.props.type === 'get') {
+
+                if (this.props.success) {
+
+                    
+                    if (this.props.user !== prevProps.user) {
+                        
+                        const { user } = this.props
+
+                        this.setState({
+                            ...this.state,
+                            date_of_birth: moment(user.date_of_birth).toDate(),
+                            name: user.name,
+                            email: user.email,
+                            phone_number: user.phone_number,
+                            role_id: user.role_id,
+                            role_name: user.role_name,
+                            photo: user.photo,
+                            place_of_birth: user.place_of_birth,
+                            address: user.address,
+                        })
+                    }
+    
+                } else {
+    
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    });
+                }
+
+            }
         }
+    }
+
+    componentDidMount() {
+        this.props.getUser(this.props.match.params.id)
     }
 
     render() {
@@ -137,7 +175,7 @@ class AddUser extends Component {
                     <div className="col-md-12">
                         <div className="row">
                             <div className="col-md-8">
-                                <h1>Tambah Pengguna</h1>
+                                <h1>Ubah Pengguna</h1>
                             </div>
                             <div className="col-md-4 text-right">
                                 <Link className="btn btn-secondary" to="/user"><i className="mdi mdi-arrow-left mr-2"></i>Kembali</Link>
@@ -205,7 +243,7 @@ class AddUser extends Component {
                         <div className="form-group">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <label className="control-label">Kata Sandi <span className="text-danger">*</span></label>
+                                    <label className="control-label">Kata Sandi</label>
                                     <input value={password} onChange={this.handleChange('password')} type="password" className={`form-control ${ validate && validate.password && 'is-invalid'}`} placeholder="Kata Sandi"/>
                                     {
                                         validate && validate.password && (
@@ -214,8 +252,11 @@ class AddUser extends Component {
                                     }
                                 </div>
                                 <div className="col-md-6">
-                                    <label className="control-label">Ulangi Kata Sandi <span className="text-danger">*</span></label>
+                                    <label className="control-label">Ulangi Kata Sandi</label>
                                     <input value={password_confirmation} onChange={this.handleChange('password_confirmation')} type="password" className="form-control" placeholder="Ulangi Kata Sandi"/>
+                                </div>
+                                <div className="help-block ml-2">
+                                    <small className="text-muted"><em>*) Biarkan kosong jika tidak ingin mengubah kata sandi</em></small>
                                 </div>
                             </div>
                         </div>
@@ -252,9 +293,9 @@ class AddUser extends Component {
                     <hr/>
                     {
                         fetching ? (
-                            <button className="btn btn-primary btn-disabled mr-2" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Simpan</button>
+                            <button className="btn btn-primary btn-disabled mr-2" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Simpan Perubahan</button>
                         ) : (
-                            <button className="btn btn-primary mr-2" onClick={this.handleSave}><i className="mdi mdi-content-save mr-2"></i>Simpan</button>
+                            <button className="btn btn-primary mr-2" onClick={this.handleSave}><i className="mdi mdi-content-save mr-2"></i>Simpan Perubahan</button>
                         )
                     }
                     <button className="btn btn-secondary" onClick={this.handleReset}><i className="mdi mdi-reload mr-2"></i>Reset</button>
@@ -297,16 +338,18 @@ const mapStateToProps = state => {
         fetching: state.user.fetching,
         error: state.user.error,
         success: state.user.success,
-        type: state.user.type
+        type: state.user.type,
+        user: state.user.user
     }    
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveUser: data => dispatch(saveUser(data))
+        updateUser: (id, data) => dispatch(updateUser(id, data)),
+        getUser: id => dispatch(getUser(id))
     }
 }
 
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(AddUser))
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(EditUser))

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import Select from 'react-select'
 import Modal from 'react-bootstrap4-modal'
 
-export class Cashier extends Component {
+class Cashier extends Component {
     state = {
         ordering: {
             type: 'name',

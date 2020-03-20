@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 
-export class Settings extends Component {
+class Settings extends Component {
     render() {
         return (
             <Fragment>

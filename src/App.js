@@ -4,7 +4,7 @@ import routes from './routes'
 import './assets/style.css'
 import Error404 from './views/Errors/Error404'
 
-export class App extends Component {
+class App extends Component {
   render() {
     return (
       <BrowserRouter>

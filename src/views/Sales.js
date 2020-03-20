@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker'
 import '../../node_modules/react-datepicker/dist/react-datepicker.css'
 import Table from '../components/Table'
 
-export class Sales extends Component {
+class Sales extends Component {
     state = {
         start_date: new Date(),
         end_date: new Date(),

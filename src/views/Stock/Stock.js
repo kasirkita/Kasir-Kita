@@ -5,7 +5,7 @@ import Table from '../../components/Table'
 import Select from 'react-select'
 import Modal from 'react-bootstrap4-modal'
 
-export class Stock extends Component {
+class Stock extends Component {
     state = {
         start_date: new Date(),
         end_date: new Date(),

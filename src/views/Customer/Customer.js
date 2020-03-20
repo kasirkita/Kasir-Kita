@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Table from '../../components/Table'
 import Modal from 'react-bootstrap4-modal'
 
-export class Customer extends Component {
+class Customer extends Component {
 
     state = {
         ordering: {

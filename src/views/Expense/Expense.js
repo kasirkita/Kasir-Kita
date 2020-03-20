@@ -4,7 +4,7 @@ import '../../../node_modules/react-datepicker/dist/react-datepicker.css'
 import Table from '../../components/Table'
 import { Link } from 'react-router-dom'
 
-export class Expense extends Component {
+class Expense extends Component {
     state = {
         start_date: new Date(),
         end_date: new Date(),

@@ -33,6 +33,10 @@ import Welcome from './views/Welcome';
 import EditProduct from './views/Product/EditProduct';
 import ViewProduct from './views/Product/ViewProduct';
 import Unit from './views/Unit/Unit';
+import EditRole from './views/Role/EditRole';
+import ViewRole from './views/Role/ViewRole';
+import EditUser from './views/User/EditUser';
+import ViewUser from './views/User/ViewUser';
 
 export default [
     {
@@ -144,6 +148,18 @@ export default [
         component: AddUser
     },
     {
+        path: '/user/edit/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: EditUser
+    },
+    {
+        path: '/user/view/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: ViewUser
+    },
+    {
         path: '/customer',
         exact: true,
         layout: DefaultScreen,
@@ -178,6 +194,18 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: AddRole
+    },
+    {
+        path: '/role/edit/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: EditRole
+    },
+    {
+        path: '/role/view/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: ViewRole
     },
     {
         path: '/report-sales',

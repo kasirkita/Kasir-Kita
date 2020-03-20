@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 
-export class DefaultScreen extends Component {
+class DefaultScreen extends Component {
 
     handleLogout = () => {
         sessionStorage.removeItem('token')

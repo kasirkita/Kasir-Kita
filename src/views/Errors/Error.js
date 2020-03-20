@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
-export class Error extends Component {
+class Error extends Component {
     render() {
         return (
             <div className="d-flex justify-content-center align-content-center mt-5">

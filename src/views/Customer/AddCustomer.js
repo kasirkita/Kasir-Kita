@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import Select from 'react-select';
 
-export class AddCustomer extends Component {
+class AddCustomer extends Component {
 
     render() {
         return (

@@ -171,3 +171,12 @@
     opacity: .5;
     cursor: not-allowed;
 }
+
+.is-invalid-select .css-yk16xz-control {
+    border-color: hsl(355, 70%, 54%) !important;
+}
+
+.img-avatar {
+    height: 50px;
+    object-fit: cover;
+}
