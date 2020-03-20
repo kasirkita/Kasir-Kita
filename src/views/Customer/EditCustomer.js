@@ -96,8 +96,8 @@ class EditCustomer extends Component {
                             name: customer.name, 
                             email: customer.email, 
                             phone_number: customer.phone_number, 
-                            type_label: customer.type_label, 
-                            type_value: customer.type_value, 
+                            type_label: customer.type_name, 
+                            type_value: customer.type, 
                             address: customer.address, 
                         })
                     }

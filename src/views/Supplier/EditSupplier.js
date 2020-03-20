@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import { saveSupplier } from '../../store/actions/SupplierActions'
+import { saveSupplier, updateSupplier, getSupplier } from '../../store/actions/SupplierActions'
 import { connect } from 'react-redux'
 import { withToastManager } from 'react-toast-notifications'
 import Error from '../Errors/Error'
 
-class AddSupplier extends Component {
+class EditSupplier extends Component {
 
     state = {
         name: '',
@@ -15,7 +15,7 @@ class AddSupplier extends Component {
     }
 
     handleSave = () => {
-        this.props.saveSupplier(this.state)
+        this.props.updateSupplier(this.props.match.params.id, this.state)
     }
 
     handleReset = () => {
@@ -40,7 +40,7 @@ class AddSupplier extends Component {
         const { toastManager } = this.props;
 
         if (prevProps.type !== this.props.type) {
-            if (this.props.type === 'save') {
+            if (this.props.type === 'update') {
                 
                 if (this.props.success) {
     
@@ -49,7 +49,7 @@ class AddSupplier extends Component {
                         autoDismiss: true
                     });
     
-                    return this.props.history.push('/suppler')
+                    return this.props.history.push('/supplier')
     
                 } else {
     
@@ -59,7 +59,39 @@ class AddSupplier extends Component {
                     });
                 }
             }
+
+            if (this.props.type === 'get') {
+
+                if (this.props.success) {
+
+                    
+                    if (this.props.supplier !== prevProps.supplier) {
+                        
+                        const { supplier } = this.props
+
+                        this.setState({
+                            ...this.state,
+                            name: supplier.name, 
+                            email: supplier.email, 
+                            phone_number: supplier.phone_number, 
+                            address: supplier.address, 
+                        })
+                    }
+    
+                } else {
+    
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    });
+                }
+
+            }
         }
+    }
+
+    componentDidMount(){
+        this.props.getSupplier(this.props.match.params.id)
     }
 
 
@@ -86,7 +118,7 @@ class AddSupplier extends Component {
                     <div className="col-md-12">
                         <div className="row">
                             <div className="col-md-8">
-                                <h1>Tambah Pemasok</h1>
+                                <h1>Ubah Pemasok</h1>
                             </div>
                             <div className="col-md-4 text-right">
                                 <Link className="btn btn-secondary" to="/supplier"><i className="mdi mdi-arrow-left mr-2"></i>Kembali</Link>
@@ -138,9 +170,9 @@ class AddSupplier extends Component {
                     <hr/>
                     {
                         fetching ? (
-                            <button className="btn btn-primary btn-disabled mr-2" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Simpan</button>
+                            <button className="btn btn-primary btn-disabled mr-2" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Simpan Perubahan</button>
                         ) : (
-                            <button className="btn btn-primary mr-2" onClick={this.handleSave}><i className="mdi mdi-content-save mr-2"></i>Simpan</button>
+                            <button className="btn btn-primary mr-2" onClick={this.handleSave}><i className="mdi mdi-content-save mr-2"></i>Simpan Perubahan</button>
                         )
                     }
                     <button className="btn btn-secondary" onClick={this.handleReset}><i className="mdi mdi-reload mr-2"></i>Reset</button>
@@ -157,14 +189,16 @@ const mapStateToProps = state => {
         fetching: state.supplier.fetching,
         error: state.supplier.error,
         success: state.supplier.success,
-        type: state.supplier.type
+        type: state.supplier.type,
+        supplier: state.supplier.supplier
     }    
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveSupplier: data => dispatch(saveSupplier(data))
+        updateSupplier: (id, data) => dispatch(updateSupplier(id, data)),
+        getSupplier: id => dispatch(getSupplier(id))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(AddSupplier))
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(EditSupplier))

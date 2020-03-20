@@ -9,6 +9,7 @@ import roleReducer from "./roleReducer"
 import permissionReducer from "./permissionReducer"
 import userReducer from "./userReducer"
 import customerReducer from "./customerReducer"
+import supplierReducer from "./supplierReducer"
 
 const rootReducer = combineReducers({
     checkUser: checkUserReducer,
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
     role: roleReducer,
     permission: permissionReducer,
     user: userReducer,
-    customer: customerReducer
+    customer: customerReducer,
+    supplier: supplierReducer
 })
 
 export default rootReducer

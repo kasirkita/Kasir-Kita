@@ -305,7 +305,7 @@ class Customer extends Component {
 
                                 ) : customers && customers.length > 0 ? customers.map(customer => {
                                     return (
-                                        <tr>
+                                        <tr key={customer._id}>
                                             <td>{customer.name}</td>
                                             <td>{customer.type_name}</td>
                                             <td>{customer.email}</td>

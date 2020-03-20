@@ -38,6 +38,7 @@ import ViewRole from './views/Role/ViewRole';
 import EditUser from './views/User/EditUser';
 import ViewUser from './views/User/ViewUser';
 import EditCustomer from './views/Customer/EditCustomer';
+import EditSupplier from './views/Supplier/EditSupplier';
 
 export default [
     {
@@ -189,6 +190,12 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: AddSupplier
+    },
+    {
+        path: '/supplier/edit/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: EditSupplier
     },
     {
         path: '/role',
