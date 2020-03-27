@@ -62,6 +62,12 @@ const register = (data) => {
             password_confirmation
 
         }).then(res => {
+
+            const setting = res.data.setting
+            sessionStorage.setItem('decimal_separator', setting ? setting.decimal_separator : '.')
+            sessionStorage.setItem('thousand_separator', setting ? setting.thousand_separator : '.' )
+            sessionStorage.setItem('currency', setting ? setting.currency : '')
+
             dispatch({
                 type: 'REGISTER_SUCCESS',
                 token: res.data.token,
@@ -111,11 +117,19 @@ const login = (data) => {
             password
 
         }).then(res => {
+
+            const setting = res.data.setting
+            sessionStorage.setItem('decimal_separator', setting ? setting.decimal_separator : '.')
+            sessionStorage.setItem('thousand_separator', setting ? setting.thousand_separator : '.' )
+            sessionStorage.setItem('currency', setting ? setting.currency : '')
+            
             dispatch({
                 type: 'LOGIN_SUCCESS',
                 token: res.data.token,
                 data: res.data.data,
-                message: res.data.message
+                message: res.data.message,
+                permissions: res.data.permissions,
+                redirect: res.data.redirect
             })
         }).catch(error => {
             if (!error.response) {

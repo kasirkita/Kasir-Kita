@@ -18,30 +18,37 @@ class Login extends Component {
     }
 
     componentDidUpdate = (prevProps) => {
+        const { toastManager } = this.props;
+
         if (prevProps.checkUserExists !== this.props.checkUserExists) {
             if (!this.props.checkUserExists) 
                 return this.props.history.push('/welcome')
         }
 
-        if (prevProps.loginSuccess !== this.props.loginSuccess) {
-            const { toastManager } = this.props;
+        if (prevProps.loginFetching !== this.props.loginFetching ) {
+
             
-            if (this.props.loginSuccess) {
+            if (this.props.loginFetched) {
 
-                toastManager.add(this.props.loginMessage, {
-                    appearance: 'success',
-                    autoDismiss: true
-                });
+                if (this.props.loginSuccess) {
 
-                return this.props.history.push('/dashboard')
+                    toastManager.add(this.props.loginMessage, {
+                        appearance: 'success',
+                        autoDismiss: true
+                    });
+    
+                    return this.props.history.push(this.props.loginRedirect)
 
-            } else {
+                } else {
 
-                toastManager.add(this.props.loginMessage, {
-                    appearance: 'error',
-                    autoDismiss: true
-                });
-            }
+                    toastManager.add(this.props.loginMessage, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    });
+                }
+                
+
+            } 
         }
     }
 
@@ -141,7 +148,8 @@ const mapStateToProps = (state) => {
         loginFetched: state.login.fetched,
         loginMessage: state.login.message,
         loginError: state.login.error,
-        loginSuccess: state.login.success
+        loginSuccess: state.login.success,
+        loginRedirect: state.login.redirect
     }
 }
 

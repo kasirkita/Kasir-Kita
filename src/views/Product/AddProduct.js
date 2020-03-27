@@ -44,8 +44,6 @@ class AddProduct extends Component {
             ...this.state,
             [name]: value.floatValue,
         })
-
-        console.log(name, value.floatValue)
     }
 
     handleChangeSelect = (name) => (e) => {
@@ -154,7 +152,7 @@ class AddProduct extends Component {
                         </div>
                         <div className="form-group">
                             <label className="control-label">Harga Beli <span className="text-danger">*</span></label>
-                            <NumberFormat decimalSeparator="." thousandSeparator="," prefix="Rp. " type="text" className={`form-control text-right ${validate && validate.cost && 'is-invalid'}`} onValueChange={this.handleChangeNumber('cost')} value={cost} placeholder="Rp. 0.0"/>
+                            <NumberFormat decimalSeparator={sessionStorage.getItem('decimal_separator')} thousandSeparator={sessionStorage.getItem('thousand_separator')} prefix={sessionStorage.getItem('currency')} type="text" className={`form-control text-right ${validate && validate.cost && 'is-invalid'}`} onValueChange={this.handleChangeNumber('cost')} value={cost} placeholder="Rp. 0.0"/>
                             {
                                 validate && validate.cost && (
                                     <div className="invalid-feedback">{ validate.cost[0] }</div>
@@ -163,7 +161,7 @@ class AddProduct extends Component {
                         </div>
                         <div className="form-group">
                             <label className="control-label">Harga Jual <span className="text-danger">*</span></label>
-                            <NumberFormat decimalSeparator="." thousandSeparator="," prefix="Rp. " type="text" className={`form-control text-right ${validate && validate.price && 'is-invalid'}`} onValueChange={this.handleChangeNumber('price')} value={price} placeholder="Rp. 0.0"/>
+                            <NumberFormat decimalSeparator={sessionStorage.getItem('decimal_separator')} thousandSeparator={sessionStorage.getItem('thousand_separator')} prefix={sessionStorage.getItem('currency')} type="text" className={`form-control text-right ${validate && validate.price && 'is-invalid'}`} onValueChange={this.handleChangeNumber('price')} value={price} placeholder="Rp. 0.0"/>
                             {
                                 validate && validate.price && (
                                     <div className="invalid-feedback">{ validate.price[0] }</div>
@@ -174,7 +172,7 @@ class AddProduct extends Component {
                     <div className="col-md-6 mt-3">
                         <div className="form-group">
                             <label className="control-label">Harga Grosir <span className="text-danger">*</span></label>
-                            <NumberFormat decimalSeparator="." thousandSeparator="," prefix="Rp. " type="text" className={`form-control text-right ${validate && validate.wholesale && 'is-invalid'}`} onValueChange={this.handleChangeNumber('wholesale')} value={wholesale} placeholder="Rp. 0.0"/>
+                            <NumberFormat decimalSeparator={sessionStorage.getItem('decimal_separator')} thousandSeparator={sessionStorage.getItem('thousand_separator')} prefix={sessionStorage.getItem('currency')} type="text" className={`form-control text-right ${validate && validate.wholesale && 'is-invalid'}`} onValueChange={this.handleChangeNumber('wholesale')} value={wholesale} placeholder="Rp. 0.0"/>
                             {
                                 validate && validate.wholesale && (
                                     <div className="invalid-feedback">{ validate.wholesale[0] }</div>

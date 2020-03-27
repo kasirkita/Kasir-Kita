@@ -92,7 +92,6 @@ class AddUser extends Component {
 
     handleSave = () => {
         this.props.saveUser(this.state)
-        // console.log(this.state)
     }
 
     componentDidUpdate = (prevProps) => {

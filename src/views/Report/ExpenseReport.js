@@ -82,13 +82,13 @@ class ExpenseReport extends Component {
                         </div>
                         <div className="row">
                             <div className="col-md-12">
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div className="dropdown">
+                                    <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i className="mdi mdi-download mr-2"></i>Unduh
                                     </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="#"><i className="mdi mdi-file-pdf mr-2"></i>PDF</a>
-                                        <a class="dropdown-item" href="#"><i className="mdi mdi-file-excel mr-2"></i>Excel</a>
+                                    <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a className="dropdown-item" href="#"><i className="mdi mdi-file-pdf mr-2"></i>PDF</a>
+                                        <a className="dropdown-item" href="#"><i className="mdi mdi-file-excel mr-2"></i>Excel</a>
                                     </div>
                                     </div>
                             </div>

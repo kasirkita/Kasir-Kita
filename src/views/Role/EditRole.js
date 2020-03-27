@@ -99,8 +99,7 @@ class EditRole extends Component {
         const { error, permissions, role } = this.props
         const { name, permissions: rolePermission } = this.state
         const validate = error && error.data && error.data.errors
-        
-        console.log(rolePermission)
+
 
         if (error && error.status !== 422)
             return <Error title={error.statusText} message={error.data.message} code={error.status} connection={error.connection} />
