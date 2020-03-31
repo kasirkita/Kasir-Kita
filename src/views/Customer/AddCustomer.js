@@ -12,8 +12,8 @@ class AddCustomer extends Component {
         name: '',
         email: '',
         phone_number: '',
-        type_label: '',
-        type_value: '',
+        type_label: 'Pengecer',
+        type_value: 'retailer',
         address: ''
     }
 
@@ -46,14 +46,14 @@ class AddCustomer extends Component {
             this.setState({
                 ...this.state,
                 [`${name}_label`]: e.label,
-                [`${name}_id`]: e.value
+                [`${name}_value`]: e.value
             })
 
         } else {
             this.setState({
                 ...this.state,
                 [`${name}_label`]: null,
-                [`${name}_id`]: null
+                [`${name}_value`]: null
             })
         }
     }
@@ -157,8 +157,7 @@ class AddCustomer extends Component {
                                     label: type_label,
                                     value: type_value
                                 }}
-                                onChange={this.handleChangeSelect('type')}
-                                isClearable 
+                                onChange={this.handleChangeSelect('type')} 
                                 placeholder="Pilih tipe"
                                 options={[
                                 {

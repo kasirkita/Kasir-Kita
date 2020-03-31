@@ -78,9 +78,9 @@ class Settings extends Component {
                             logo_url: setting.logo_url,
                             phone_number: setting.phone_number,
                             divider: setting.divider,
-                            currency: setting.currency,
-                            thousand_separator: setting.thousand_separator,
-                            decimal_separator: setting.decimal_separator
+                            currency: setting.currency ? setting.currency : '',
+                            thousand_separator: setting.thousand_separator ? setting.thousand_separator : '',
+                            decimal_separator: setting.decimal_separator ? setting.decimal_separator : ''
                         })
                     }
 

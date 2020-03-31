@@ -123,7 +123,7 @@ class Login extends Component {
                             <div className="form-group mt-4">
                                 {
                                     loginFetching ? (
-                                        <button type="button" className="btn btn-primary btn-disabled mr-2" disabled alt="loading"><i className="mdi mdi-loading mdi-spin mr-2"></i>Looading...</button>
+                                        <button type="button" className="btn btn-primary btn-disabled mr-2" disabled alt="loading"><i className="mdi mdi-loading mdi-spin mr-2"></i>Loading...</button>
                                     ) : (
                                         <button className="btn btn-primary mr-2" type="submit"><i className="mdi mdi-lock mr-2"></i>Masuk</button>
                                     ) 

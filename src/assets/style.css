@@ -7,7 +7,7 @@
     z-index: 2;
     background-color: #fff;
     width: 100%;
-    border: 1px solid #eee;
+    /* border: 1px solid #eee; */
 }
 
 .autocomplete > ul {
@@ -179,4 +179,39 @@
 .img-avatar {
     height: 50px;
     object-fit: cover;
+}
+
+
+.table-scrollable tbody{
+    display:block;
+    overflow:auto;
+    max-height:200px;
+    width:100%;
+}
+
+.table-scrollable thead tr, .table-scrollable tfoot tr {
+    display:block;
+}
+
+.table-scrollable tr > th, .table-scrollable tr > td {
+    width: 33.3%;
+}
+
+.table-scrollable tr > td {
+    font-weight: normal;
+    position: relative;
+}
+
+.table-scrollable tr > td:last-child {
+    padding-right: 35px;
+}
+
+.table-scrollable tr > td > button.btn-remove {
+    position: absolute;
+    right: 0px;
+    top: 5px;
+}
+
+.table-scrollable tfoot > tr > th {
+    width: 100%;
 }

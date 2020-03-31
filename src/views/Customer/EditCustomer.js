@@ -46,14 +46,14 @@ class EditCustomer extends Component {
             this.setState({
                 ...this.state,
                 [`${name}_label`]: e.label,
-                [`${name}_id`]: e.value
+                [`${name}_value`]: e.value
             })
 
         } else {
             this.setState({
                 ...this.state,
                 [`${name}_label`]: null,
-                [`${name}_id`]: null
+                [`${name}_value`]: null
             })
         }
     }
@@ -191,8 +191,7 @@ class EditCustomer extends Component {
                                     label: type_label,
                                     value: type_value
                                 }}
-                                onChange={this.handleChangeSelect('type')}
-                                isClearable 
+                                onChange={this.handleChangeSelect('type')} 
                                 placeholder="Pilih tipe"
                                 options={[
                                 {
