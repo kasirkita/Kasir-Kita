@@ -223,8 +223,8 @@ class Customer extends Component {
 
     render() {
 
-        const { ordering, modal, deleteModal, downloading, printing, perpage } = this.state
-        const { data, fetching, error, uploading, selected } = this.props
+        const { ordering, deleteModal, perpage } = this.state
+        const { data, fetching, error } = this.props
         const customers = data && data.data
 
         const theads = [
@@ -367,7 +367,7 @@ class Customer extends Component {
                         <div className="d-flex justify-content-end">
                             <div className="form-group">
                                 <label className="control-label">Tampilkan data perhalaman</label>
-                                <select className="form-control" value={perpage} className="form-control" onChange={this.handleChangeSelect('perpage')}>
+                                <select className="form-control" value={perpage} onChange={this.handleChangeSelect('perpage')}>
                                     <option value="5">5</option>
                                     <option value="10">10</option>
                                     <option value="15">15</option>

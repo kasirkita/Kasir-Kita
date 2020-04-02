@@ -67,6 +67,15 @@ const register = (data) => {
             sessionStorage.setItem('decimal_separator', setting ? setting.decimal_separator : '.')
             sessionStorage.setItem('thousand_separator', setting ? setting.thousand_separator : '.' )
             sessionStorage.setItem('currency', setting ? setting.currency : '')
+            sessionStorage.setItem('printer', setting ? setting.printer : '')
+            sessionStorage.setItem('tax', setting ? setting.tax : '')
+            sessionStorage.setItem('logo', setting.logo_url)
+            sessionStorage.setItem('logo_remove', setting.logo_remove ? setting.logo_remove : false)
+            sessionStorage.setItem('shop_name', setting.name ? setting.name : '')
+            sessionStorage.setItem('address', setting.address ? setting.address : '')
+            sessionStorage.setItem('phone_number', setting.phone_number ? setting.phone_number : '')
+            sessionStorage.setItem('divider', setting.divider ? setting.divider : '')
+
 
             dispatch({
                 type: 'REGISTER_SUCCESS',
@@ -122,6 +131,14 @@ const login = (data) => {
             sessionStorage.setItem('decimal_separator', setting ? setting.decimal_separator : '.')
             sessionStorage.setItem('thousand_separator', setting ? setting.thousand_separator : '.' )
             sessionStorage.setItem('currency', setting ? setting.currency : '')
+            sessionStorage.setItem('printer', setting ? setting.printer : '')
+            sessionStorage.setItem('tax', setting ? setting.tax : '')
+            sessionStorage.setItem('logo', setting.logo_url)
+            sessionStorage.setItem('logo_remove', setting.logo_remove ? setting.logo_remove : false)
+            sessionStorage.setItem('shop_name', setting.name ? setting.name : '')
+            sessionStorage.setItem('address', setting.address ? setting.address : '')
+            sessionStorage.setItem('phone_number', setting.phone_number ? setting.phone_number : '')
+            sessionStorage.setItem('divider', setting.divider ? setting.divider : '')
             
             dispatch({
                 type: 'LOGIN_SUCCESS',

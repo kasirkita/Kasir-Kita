@@ -51,12 +51,13 @@ const saveSetting = (data) => {
             address,
             logo,
             logo_remove,
-            logo_url,
             phone_number,
             divider,
             currency,
             thousand_separator,
-            decimal_separator
+            decimal_separator,
+            tax,
+            printer
         } = data
         
         dispatch({
@@ -74,6 +75,8 @@ const saveSetting = (data) => {
         fd.set('currency', currency)
         fd.set('thousand_separator', thousand_separator)
         fd.set('decimal_separator', decimal_separator)
+        fd.set('tax', tax)
+        fd.set('printer', printer)
 
         Axios.post(`${url}/setting`, fd,
             {
@@ -83,9 +86,17 @@ const saveSetting = (data) => {
             }
         }).then(res => {
 
-            sessionStorage.setItem('decimal_separator', res.data.data.decimal_separator)
-            sessionStorage.setItem('thousand_separator', res.data.data.thousand_separator)
-            sessionStorage.setItem('currency', res.data.data.currency)
+            sessionStorage.setItem('decimal_separator', res.data.data.decimal_separator ? res.data.data.decimal_separator : '')
+            sessionStorage.setItem('thousand_separator', res.data.data.thousand_separator ? res.data.data.thousand_separator : '')
+            sessionStorage.setItem('currency', res.data.data.currency ? res.data.data.currency : '')
+            sessionStorage.setItem('printer', res.data.data.printer ? res.data.data.printer : '')
+            sessionStorage.setItem('tax', res.data.data.tax ? res.data.data.tax : '')
+            sessionStorage.setItem('logo', res.data.data.logo_url)
+            sessionStorage.setItem('logo_remove', res.data.data.logo_remove ? res.data.data.logo_remove : false)
+            sessionStorage.setItem('shop_name', res.data.data.name ? res.data.data.name : '')
+            sessionStorage.setItem('address', res.data.data.address ? res.data.data.address : '')
+            sessionStorage.setItem('phone_number', res.data.data.phone_number ? res.data.data.phone_number : '')
+            sessionStorage.setItem('divider', res.data.data.divider ? res.data.data.divider : '')
 
 
             dispatch({

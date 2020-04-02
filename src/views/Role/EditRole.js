@@ -96,7 +96,7 @@ class EditRole extends Component {
 
     render() {
 
-        const { error, permissions, role } = this.props
+        const { error, permissions } = this.props
         const { name, permissions: rolePermission } = this.state
         const validate = error && error.data && error.data.errors
 
@@ -142,7 +142,7 @@ class EditRole extends Component {
                                                 return (
                                                     <div className="col-md-4" key={permission._id}>
                                                         <div className="form-check">
-                                                            <input checked={rolePermission[permission.slug] ? rolePermission[permission.slug] : false} onChange={this.handleClickCheckbox} className="form-check-input" type="checkbox" onChange={this.handleClickCheckbox} value={permission.slug} id={permission.slug} />
+                                                            <input checked={rolePermission[permission.slug] ? rolePermission[permission.slug] : false} onChange={this.handleClickCheckbox} className="form-check-input" type="checkbox" value={permission.slug} id={permission.slug} />
                                                             <label className="form-check-label" htmlFor={permission.slug}>
                                                                 {permission.name} 
                                                             </label>

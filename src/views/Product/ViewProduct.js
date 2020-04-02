@@ -43,7 +43,7 @@ class ViewProduct extends Component {
                                     <th>Kategori</th>
                                     <td>{ product && product.category && product.category.name }</td>
                                     <th>Stok</th>
-                                    <td>{ product && product.stock && product.stock.amount }/{ product && product.unit && product.unit.name }</td>
+                                    <td>{ product && product.qty && product.qty.amount }/{ product && product.unit && product.unit.name }</td>
                                 </tr>
                             </tbody>
                         </table>

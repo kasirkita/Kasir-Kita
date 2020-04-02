@@ -39,6 +39,7 @@ import EditUser from './views/User/EditUser';
 import ViewUser from './views/User/ViewUser';
 import EditCustomer from './views/Customer/EditCustomer';
 import EditSupplier from './views/Supplier/EditSupplier';
+import EditDiscount from './views/Discount/EditDiscount';
 
 export default [
     {
@@ -262,6 +263,12 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: AddDiscount
+    },
+    {
+        path: '/discount/edit/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: EditDiscount
     },
     {
         path: '/welcome',

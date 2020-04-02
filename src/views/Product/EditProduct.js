@@ -7,7 +7,6 @@ import Error from '../Errors/Error';
 import { withToastManager } from 'react-toast-notifications'
 import Axios from 'axios'
 import { url } from '../../global'
-import NumberFormat from 'react-number-format';
 import FormatNumber from '../../components/FormatNumber';
 
 class AddProduct extends Component {
@@ -106,7 +105,7 @@ class AddProduct extends Component {
                             unit_label: product.unit && product.unit.name,
                             category_id: product.category && product.category.name,
                             category_label: product.category && product.category.name,
-                            stock: product.stock && product.stock.amount
+                            stock: product.qty && product.qty.amount
                         })
                     }
     

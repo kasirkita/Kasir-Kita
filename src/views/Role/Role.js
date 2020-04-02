@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import Table from '../../components/Table';
 import Modal from 'react-bootstrap4-modal';
-import { fetchRole, toggleRole, deleteRole, importRole, selectRole } from '../../store/actions/RoleActions'
+import { fetchRole, toggleRole, deleteRole } from '../../store/actions/RoleActions'
 import { withToastManager } from 'react-toast-notifications'
 import Error from '../Errors/Error'
 import { connect } from 'react-redux'
@@ -228,8 +228,8 @@ class Role extends Component {
     }
 
     render() {
-        const { ordering, modal, deleteModal, downloading, printing, perpage } = this.state
-        const { data, fetching, error, uploading, selected } = this.props
+        const { ordering, deleteModal, perpage } = this.state
+        const { data, fetching, error } = this.props
         const roles = data && data.data
 
         const theads = [
@@ -367,7 +367,7 @@ class Role extends Component {
                         <div className="d-flex justify-content-end">
                             <div className="form-group">
                                 <label className="control-label">Tampilkan data perhalaman</label>
-                                <select value={perpage} className="form-control" onChange={this.handleChangeSelect('perpage')} className="form-control">
+                                <select value={perpage} onChange={this.handleChangeSelect('perpage')} className="form-control">
                                     <option value="5">5</option>
                                     <option value="10">10</option>
                                     <option value="15">15</option>

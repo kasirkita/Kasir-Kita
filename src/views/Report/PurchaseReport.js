@@ -88,8 +88,8 @@ class PurchasReport extends Component {
                                         <i className="mdi mdi-download mr-2"></i>Unduh
                                     </button>
                                     <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a className="dropdown-item" href="#"><i className="mdi mdi-file-pdf mr-2"></i>PDF</a>
-                                        <a className="dropdown-item" href="#"><i className="mdi mdi-file-excel mr-2"></i>Excel</a>
+                                        <button className="dropdown-item"><i className="mdi mdi-file-pdf mr-2"></i>PDF</button>
+                                        <button className="dropdown-item"><i className="mdi mdi-file-excel mr-2"></i>Excel</button>
                                     </div>
                                     </div>
                             </div>

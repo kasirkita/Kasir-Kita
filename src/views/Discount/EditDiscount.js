@@ -7,12 +7,13 @@ import Select from 'react-select'
 import Axios from 'axios'
 import { url } from '../../global'
 import { withToastManager } from 'react-toast-notifications'
-import { saveDiscount } from '../../store/actions/DiscountActions'
+import { updateDiscount, getDiscount } from '../../store/actions/DiscountActions'
 import Error from '../Errors/Error'
 import { connect } from 'react-redux'
 import NumberFormat from 'react-number-format'
+import moment from 'moment'
 
-class AddDiscount extends Component {
+class EditDiscount extends Component {
     state = {
         valid_thru: undefined,
         amount: '',
@@ -28,7 +29,6 @@ class AddDiscount extends Component {
 
     handleChange = (name, value) => {
 
-        if (value)
         this.setState({
             ...this.state,
             [name]: value
@@ -53,8 +53,8 @@ class AddDiscount extends Component {
         }
     }
 
-    handleSave = () => {
-        this.props.saveDiscount(this.state)
+    handleUpdate = () => {
+        this.props.updateDiscount(this.props.match.params.id, this.state)
     }
 
     handleReset = () => {
@@ -67,9 +67,7 @@ class AddDiscount extends Component {
             term: '',
             total_qty: '',
             quota: '',
-            customer_type: '',
-            product_name: '',
-            product_id: ''
+            customer_type: ''
         })
     }
 
@@ -77,7 +75,7 @@ class AddDiscount extends Component {
        
         const { toastManager } = this.props;
         if (prevProps.type !== this.props.type || prevProps.success !== this.props.success) {
-            if (this.props.type === 'save') {
+            if (this.props.type === 'update') {
                 
                 if (this.props.success) {
     
@@ -96,11 +94,47 @@ class AddDiscount extends Component {
                     });
                 }
             }
+
+            if (this.props.type === 'get') {
+
+                if (this.props.success) {
+
+                    
+                    if (this.props.discount !== prevProps.discount) {
+                        
+                        const { discount } = this.props
+
+                        this.setState({
+                            ...this.state,
+                            valid_thru: moment(discount.valid_thru).toDate(),
+                            amount: discount.amount,
+                            type: discount.type,
+                            term: discount.term,
+                            total_qty: discount.total_qty,
+                            quota: discount.quota,
+                            customer_id: discount.customer_type,
+                            customer_name: discount.customer_type_name,
+                            product_name: discount.product_name,
+                            product_id: discount.product_id,
+                        })
+                    }
+    
+                } else {
+    
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    });
+                }
+            }
         }
     }
 
-    render() {
+    componentDidMount() {
+        this.props.getDiscount(this.props.match.params.id)
+    }
 
+    render() {
         const { valid_thru,
             amount,
             type,
@@ -128,7 +162,7 @@ class AddDiscount extends Component {
                 <div className="col-md-12">
                     <div className="row">
                         <div className="col-md-8">
-                            <h1>Tambah Promo</h1>
+                            <h1>Ubah Promo</h1>
                         </div>
                         <div className="col-md-4 text-right">
                             <Link className="btn btn-secondary" to="/discount"><i className="mdi mdi-arrow-left mr-2"></i>Kembali</Link>
@@ -140,7 +174,7 @@ class AddDiscount extends Component {
                 <div className="col-md-6 mt-3">
                     <div className="form-group">
                         <label className="control-label">Barang <span className="text-danger">*</span></label>
-                        <AsyncSelect selected={ product_id ? {
+                        <AsyncSelect isDisabled value={ product_id ? {
                             value: product_id,
                             label: product_name
                         } : null } onChange={(e) => this.handleChangeSelect('product', e)} loadOptions={getProductList} cacheOptions defaultOptions isClearable placeholder="Pilih Barang" className={`${ validate && validate.product_id ? 'is-invalid-select' : ''}`} />
@@ -157,7 +191,7 @@ class AddDiscount extends Component {
                         <label className="control-label">Tipe Pelanggan</label>
                         <Select
                         onChange={(e) => this.handleChangeSelect('customer', e)}
-                        selected={ customer_id ?  { value: customer_id, label: customer_name } : null }
+                        value={ customer_id ?  { value: customer_id, label: customer_name } : null }
                         options={[
                             {
                                 label: 'Pengecer',
@@ -188,7 +222,7 @@ class AddDiscount extends Component {
                         <div className="col-md-4">
                             <div className="form-group">
                                 <label className="control-label">Kuota</label>
-                                <NumberFormat value={quota} onValueChange={(e) => this.handleChange('quota', e.floatValue)} className="form-control text-right" placeholder="Kuota" />
+                                <NumberFormat value={quota} onValueChange={(e) => this.handleChange('quota', e.floatValue ? e.floatValue : '')} className="form-control text-right" placeholder="Kuota" />
                             </div>
                         </div>
                     </div>
@@ -254,7 +288,7 @@ class AddDiscount extends Component {
 
                 <div className="col-md-12 mt-2 text-right mb-5">
                     <hr/>
-                    <button className={`btn btn-primary mr-2 ${fetching ? 'btn-disabled': '' }`} disabled={fetching} onClick={this.handleSave}>{ fetching ? <i className="mdi mdi-loading mdi-spin mr-2" /> :  <i className="mdi mdi-content-save mr-2" /> } Simpan</button>
+                    <button className={`btn btn-primary mr-2 ${fetching ? 'btn-disabled': '' }`} disabled={fetching} onClick={this.handleUpdate}>{ fetching ? <i className="mdi mdi-loading mdi-spin mr-2" /> :  <i className="mdi mdi-content-save mr-2" /> } Simpan Perubahan</button>
                     <button className="btn btn-secondary" onClick={this.handleReset}><i className="mdi mdi-reload mr-2"></i>Reset</button>
                 </div>
 
@@ -298,15 +332,17 @@ const mapStateToProps = state => {
         fetching: state.discount.fetching,
         error: state.discount.error,
         success: state.discount.success,
-        type: state.discount.type
+        type: state.discount.type,
+        discount: state.discount.discount
     }    
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveDiscount: data => dispatch(saveDiscount(data))
+        updateDiscount: (id, data) => dispatch(updateDiscount(id, data)),
+        getDiscount: (id) => dispatch(getDiscount(id))
     }
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(AddDiscount))
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(EditDiscount))

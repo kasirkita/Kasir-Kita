@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from 'react'
-import Select from 'react-select'
 import Modal from 'react-bootstrap4-modal'
 import Axios from 'axios'
 import { withToastManager } from 'react-toast-notifications'
 import { url } from '../global'
 import FormatNumber from '../components/FormatNumber'
 import AsyncSelect from 'react-select/async'
+import { connect } from 'react-redux'
+import { saveSales } from '../store/actions/SalesActions'
+import moment from 'moment'
 
 class Cashier extends Component {
     state = {
@@ -18,7 +20,8 @@ class Cashier extends Component {
         products: [],
         keyword: '',
         cash: '',
-        payment: 'cash'
+        payment: 'cash',
+        withPrint: false
     }
 
     handlePayModal = () => {
@@ -65,8 +68,6 @@ class Cashier extends Component {
     }
 
     handleChangeSelect = (name) => (e) => {
-        
-        console.log(e)
 
         if (e !== null) {
             this.setState({
@@ -233,10 +234,202 @@ class Cashier extends Component {
         })
     }
 
+    handlePay = (withPrint, status = 'done') => {
+
+        let data = this.state
+        const subtotal = data.carts.reduce((total, cart) => {
+            return total + ( data.customer_type === 'wholesaler' ? cart.wholesale * cart.qty : cart.price *  cart.qty )
+        }, 0)
+
+
+        let tax = sessionStorage.getItem('tax')
+        tax  = tax > 0 ? subtotal * (tax / 100) : 0
+
+        const total_discount = data.carts.reduce((total, cart) => {
+        const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : cart.price * (cart.discount_amount / 100) : 0
+        let set_term
+        let discount
+
+        if (cart.term === '=') {
+            set_term = cart.qty >= cart.total_qty
+        } else {
+            set_term = cart.qty > cart.total_qty
+        }
+
+        if (set_term) {
+
+            if (cart.customer_type) {
+                if (cart.customer_type === data.customer_type) {
+                    discount = set_discount
+                } else {
+                    discount = 0
+                }
+            } else {
+                discount = set_discount;
+            }
+
+        } else {
+            discount = 0
+        }
+
+        return total + discount
+
+        }, 0)
+
+        data = {
+            ...data,
+            status,
+            subtotal,
+            total_discount,
+            tax,
+            change: data.cash - ((subtotal + tax) - total_discount),
+            total:  (subtotal + tax) - total_discount
+        }
+
+        this.setState({
+            ...this.state,
+            withPrint
+        })
+
+        this.props.saveSales(data)
+    }
+
+    componentDidUpdate = (prevProps) => {
+        
+        const { toastManager } = this.props;
+
+        if (prevProps.type !== this.props.type || prevProps.success !== this.props.success || prevProps.sales !== this.props.sales) {
+            if (this.props.type === 'save') {
+                
+                if (this.props.success) {
+    
+                    toastManager.add(this.props.message, {
+                        appearance: 'success',
+                        autoDismiss: true
+                    });
+                    
+                    if (this.state.withPrint) {
+                        this.handlePrint(this.props.sales)
+                    } else {
+                        this.handleReset()
+                    }
+    
+                } else {
+    
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    });
+                }
+            }
+        }
+    }
+
+    divider = (value, length = 36) => {
+        let separator = []
+        for (let i = 0; i < length; i++ ) {
+            separator.push(value)
+        }
+
+        return separator.join('')
+    }
+
+    handlePrint = (res) =>{
+
+        const { toastManager } = this.props
+        let data = res
+        const printer = sessionStorage.getItem('printer') ? sessionStorage.getItem('printer') : 'http://localhost:4000'
+        data = {
+            ...data,
+            logo: sessionStorage.getItem('logo'),
+            cashier: sessionStorage.getItem('name'),
+            logo_remove: sessionStorage.getItem('logo_remove') === 'false' ? false : true,
+            date: moment(new Date()).format('DD MMM YYYY HH:mm'),
+            shop_name: sessionStorage.getItem('shop_name'),
+            address: sessionStorage.getItem('address'),
+            divider: this.divider(sessionStorage.getItem('divider'), 30),
+            phone_number: sessionStorage.getItem('phone_number')
+        }
+
+        Axios.post(`${printer}/receipt`, data).then(res => {
+            this.handleReset()
+        }).catch(err => {
+            if(!err.response) {
+                
+                toastManager.add('Printer tidak tersambung', {
+                    appearance: 'error',
+                    autoDismiss: true
+                }); 
+            
+            } else {
+
+                toastManager.add(err.response.data.message, {
+                    appearance: 'error',
+                    autoDismiss: true
+                }); 
+
+            }
+        })
+
+
+    }
+
+    handleReset = () => {
+
+        this.setState({
+            ...this.state,
+            carts: [],
+            payModal: false,
+            code: '',
+            customer_id: null,
+            customer_name: null,
+            customer_type: null,
+            products: [],
+            keyword: '',
+            cash: '',
+            payment: 'cash'
+        })
+    }
+
     render() {
         const { payModal, carts, code, customer_id, customer_name, products, keyword, customer_type, cash, payment } = this.state
+        const { fetching } = this.props
         const total = carts.reduce((total, cart) => {
-            return total + ( customer_type === 'wholesaler' ? cart.wholesale : cart.price *  cart.qty )
+            return total + ( customer_type === 'wholesaler' ? cart.wholesale * cart.qty : cart.price *  cart.qty )
+        }, 0)
+        let tax = parseInt(sessionStorage.getItem('tax'))
+        tax = tax > 0 ? total * (tax / 100) : 0
+
+        const total_discount = carts.reduce((total, cart) => {
+
+            const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : cart.price * (cart.discount_amount / 100) : 0
+            let set_term
+            let discount
+
+            if (cart.term === '=') {
+                set_term = cart.qty >= cart.total_qty
+            } else {
+                set_term = cart.qty > cart.total_qty
+            }
+
+            if (set_term) {
+
+                if (cart.customer_type) {
+                    if (cart.customer_type === customer_type) {
+                        discount = set_discount
+                    } else {
+                        discount = 0
+                    }
+                } else {
+                    discount = set_discount;
+                }
+
+            } else {
+                discount = 0
+            }
+
+            return total + discount
+
         }, 0)
 
         return (
@@ -267,9 +460,29 @@ class Cashier extends Component {
                                                 }</td>
                                             </tr>
                                             <tr>
-                                                <td>Total belanja</td>
+                                                <td>Subtotal</td>
                                                 <td>
                                                     <FormatNumber value={total} type="text" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pajak</td>
+                                                <td>
+                                                   <FormatNumber value={tax} type="text" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Diskon</td>
+                                                <td>
+                                                   -<FormatNumber value={total_discount} type="text" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Belanja</td>
+                                                <td>
+                                                    {
+                                                        <FormatNumber value={(total + tax) - total_discount} type="text" />
+                                                    }
                                                 </td>
                                             </tr>
                                             {
@@ -281,7 +494,7 @@ class Cashier extends Component {
                                                         </tr>
                                                         <tr>
                                                             <td>Kembalian</td>
-                                                            <td><FormatNumber value={cash - total} type="text" /></td>
+                                                            <td><FormatNumber value={cash - ((total + tax) - total_discount)} type="text" /></td>
                                                         </tr>
                                                     </Fragment>
                                                 )
@@ -318,8 +531,18 @@ class Cashier extends Component {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn btn-primary mr-2" onClick={this.handlePayModal}><i className="mdi mdi-cash mr-2"></i>Bayar</button>
-                            <button className="btn btn-success mr-2"><i className="mdi mdi-clock mr-2"></i>Tahan</button>
+                            {
+                                fetching ? (
+                                    <button className="btn btn-default btn-disabled" disabled><i className="mdi mdi-loading mdi-spin mr-2"></i>Loading...</button>
+                                ) : (
+
+                                    <Fragment>
+                                        <button onClick={() => this.handlePay(true)} className="btn btn-primary mr-2"><i className="mdi mdi-cash mr-2"></i>Bayar dan cetak</button>
+                                        <button onClick={() => this.handlePay(false)} className="btn btn-success mr-2"><i className="mdi mdi-cash mr-2"></i>Bayar tanpa cetak</button>
+                                        <button onClick={() => this.handlePay(false, 'hold')} className="btn btn-success mr-2"><i className="mdi mdi-clock mr-2"></i>Tahan</button>
+                                    </Fragment>
+                                )
+                            }
                         </div>
                     </Modal>
 
@@ -376,19 +599,50 @@ class Cashier extends Component {
                                     <th>Nama</th>
                                     <th className="text-right">Harga Jual</th>
                                     <th className="text-center">Qty</th>
+                                    <th className="text-center">Diskon</th>
                                     <th className="text-right">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {
-                                    carts ? carts.map(cart => {
+                                    carts ? carts.map(cart => { 
+
+                                        const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : cart.price * (cart.discount_amount / 100) : 0
+                                        let set_term
+                                        let discount
+
+                                        if (cart.term === '=') {
+                                            set_term = cart.qty >= cart.total_qty
+                                        } else {
+                                            set_term = cart.qty > cart.total_qty
+                                        }
+
+                                        if (set_term) {
+
+                                            if (cart.customer_type) {
+                                                if (cart.customer_type === customer_type) {
+                                                    discount = set_discount
+                                                } else {
+                                                    discount = 0
+                                                }
+                                            } else {
+                                                discount = set_discount;
+                                            }
+
+                                        } else {
+                                            discount = 0
+                                        }
+
+                                        const subtotal = customer_type === 'wholesaler' ? (cart.wholesale * cart.qty) - discount : (cart.price *  cart.qty) - discount
+
                                         return (
                                             <tr key={cart._id}>
                                                 <td>{cart.name}</td>
                                                 <td className="text-right">{ customer_type === 'wholesaler' ? cart.wholesale_formatted : cart.price_formatted}</td>
                                                 <td className="text-center" width="120"><input style={{width: '50%', margin: 'auto'}} type="number" value={cart.qty} min="1" onChange={(e) => this.handleUpdateQty(e.target.value, cart._id) } className="form-control text-right" /></td>
+                                                <td className="text-right"><FormatNumber value={discount} type="text" /></td>
                                                 <td className="text-right">
-                                                    <FormatNumber value={customer_type === 'wholesaler' ? cart.wholesale : cart.price *  cart.qty } type="text" />
+                                                    <FormatNumber value={ subtotal } type="text" />
                                                     <button onClick={ () => this.handleDeleteCart(cart._id)  } className="btn btn-link text-danger btn-remove">&times;</button>
                                                 </td>
                                             </tr>
@@ -404,7 +658,7 @@ class Cashier extends Component {
                             <tfoot>
                                 <tr>
                                     <th className="text-right" colSpan="3">Total</th>
-                                    <th className="text-right"><FormatNumber value={total} type="text" /></th>
+                                    <th className="text-right"><FormatNumber value={(total + tax) - total_discount} type="text" /></th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -446,4 +700,23 @@ const getCustomerList = (inputValue, callback) => {
      })
 }
 
-export default withToastManager(Cashier)
+
+const mapStateToProps = state => {
+    return {
+        ...state,
+        fetching: state.sales.fetching,
+        fetched: state.sales.fetched,
+        message: state.sales.message,
+        success: state.sales.success,
+        sales: state.sales.sales,
+        type: state.sales.type
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        saveSales: data => dispatch(saveSales(data))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(Cashier))

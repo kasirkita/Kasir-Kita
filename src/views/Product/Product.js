@@ -174,7 +174,7 @@ class Product extends Component {
         
         files && files.map(file => {
 
-           this.props.importProduct(file)
+           return this.props.importProduct(file)
 
         })
     }
@@ -198,16 +198,19 @@ class Product extends Component {
                         appearance: 'error',
                         autoDismiss: true
                     })
+                    
                 }
 
                 if (file.type !== 'text/csv') {
                     
-                    console.log(file.type)
                     toastManager.add('Format berkas tidak didukung', {
                         appearance: 'error',
                         autoDismiss: true
                     })
+                    
                 }
+
+                return true
             })
         }
 
@@ -326,6 +329,70 @@ class Product extends Component {
         })
     }
 
+    handlePrintThermal = () => {
+
+        this.setState({
+            ...this.state,
+            printing: true
+        })
+
+        Axios.get(`${url}/product/print-thermal`, {
+            headers: {
+                Authorization:`Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+        
+
+            this.handlePrintLabel(res.data.data)
+
+        })
+    }
+
+    handlePrintLabel = (data) => {
+        const { toastManager } = this.props
+        const printer = sessionStorage.getItem('printer')
+        Axios.post(`${printer}/label`, {
+            data
+        }).then(res => {
+
+            toastManager.add(res.data.message, {
+                appearance: 'success',
+                autoDismiss: true
+            });
+
+            this.setState({
+                ...this.state,
+                printing: false,
+                modal: false
+            })
+
+        }).catch(err => {
+
+            if(!err.response) {
+                
+                toastManager.add('Printer tidak tersambung', {
+                    appearance: 'error',
+                    autoDismiss: true
+                }); 
+            
+            } else {
+
+                toastManager.add(err.response.data.message, {
+                    appearance: 'error',
+                    autoDismiss: true
+                }); 
+
+            }
+
+            this.setState({
+                ...this.state,
+                loadingTestReceipt: false
+            })
+
+        })
+
+    }
+
     handlePrint = (name) => (e) => {
         const { selected, toastManager } = this.props
         if (selected < 1) {
@@ -335,7 +402,7 @@ class Product extends Component {
             })
         } else {
             if (name === 'thermal') {
-                console.log('Printed with thermal')
+                this.handlePrintThermal()
             } else {
                 this.handlePrintPdf()
             }
@@ -477,8 +544,8 @@ class Product extends Component {
                                 <div className="d-flex justify-content-start mt-2">
                                     <button className={`btn btn-secondary dropdown-toggle ${printing ? 'disabled': ''}`} disabled={printing} type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{ printing ? (<i className="mdi mdi-loading mdi-spin mr-2"/>) : (<i className="mdi mdi-printer mr-2"/>) }Cetak label</button>
                                         <div className="dropdown-menu">
-                                            <a className="dropdown-item pointer" onClick={this.handlePrint('thermal')}>Cetak dengan thermal</a>
-                                            <a className="dropdown-item pointer" onClick={this.handlePrint('pdf')}>Cetak dengan PDF</a>
+                                            <button className="dropdown-item pointer" onClick={this.handlePrint('thermal')}>Cetak dengan thermal</button>
+                                            <button className="dropdown-item pointer" onClick={this.handlePrint('pdf')}>Cetak dengan PDF</button>
                                         </div>
                                 </div>
                                 <div className="d-flex justofy-content-start mt-2">
@@ -532,7 +599,7 @@ class Product extends Component {
                                                 </td>
                                                 <td>{product.category && product.category.name}</td>
                                                 <td className="text-right">{product.price_formatted}</td>
-                                                <td className="text-center">{product.stock.amount} {product.unit && product.unit.name} </td>
+                                                <td className="text-center">{product.qty && product.qty.amount} {product.unit && product.unit.name} </td>
                                                 <td className="text-center"><input onClick={this.handleActive} value={product._id} type="checkbox" defaultChecked={product.deleted_at ? false : true} /></td>
                                                 <td>
                                                     <button onClick={() => this.handleDeleteModal(product._id)} className="btn p-0 text-danger btn-link btn-sm mr-3">Hapus</button>

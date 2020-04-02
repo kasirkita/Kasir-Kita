@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import { saveSupplier, updateSupplier, getSupplier } from '../../store/actions/SupplierActions'
+import { updateSupplier, getSupplier } from '../../store/actions/SupplierActions'
 import { connect } from 'react-redux'
 import { withToastManager } from 'react-toast-notifications'
 import Error from '../Errors/Error'

@@ -74,7 +74,6 @@ class EditUser extends Component {
         this.setState({
             ...this.state,
             date_of_birth: null,
-            date_of_birth: '',
             name: '',
             email: '',
             phone_number: '',
@@ -160,7 +159,7 @@ class EditUser extends Component {
     }
 
     render() {
-        const { date_of_birth, name, email, phone_number, role_id, role_name, password, password_confirmation, photo, place_of_birth, address } = this.state
+        const { date_of_birth, name, email, phone_number, role_id, role_name, password, password_confirmation, place_of_birth, address } = this.state
         const { fetching, error } = this.props
 
         const validate = error && error.data && error.data.errors

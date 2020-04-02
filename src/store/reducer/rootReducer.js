@@ -11,6 +11,8 @@ import userReducer from "./userReducer"
 import customerReducer from "./customerReducer"
 import supplierReducer from "./supplierReducer"
 import settingReducer from "./settingReducer"
+import salesReducer from "./salesReducer"
+import discountReducer from "./discountReducer"
 
 const rootReducer = combineReducers({
     checkUser: checkUserReducer,
@@ -24,7 +26,9 @@ const rootReducer = combineReducers({
     user: userReducer,
     customer: customerReducer,
     supplier: supplierReducer,
-    setting: settingReducer
+    setting: settingReducer,
+    sales: salesReducer,
+    discount: discountReducer
 })
 
 export default rootReducer

@@ -21,7 +21,7 @@ class DefaultScreen extends Component {
                     </Link>
                     <ul className="navbar-nav ml-auto">
                         <li className="dropdown">
-                            <button className="btn btn-link nav-link dropdown-toggle" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button className="btn btn-link nav-link dropdown-toggle" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img className="rounded-circle mr-2" width="25px" src={sessionStorage.getItem('avatar') !== 'null' ? sessionStorage.getItem('avatar') : require('../assets/img/default.png')} alt=""/> Halo {sessionStorage.getItem('name')}
                             </button>
 
