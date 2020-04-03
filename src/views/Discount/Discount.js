@@ -2,10 +2,13 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import Table from '../../components/Table'
 import Modal from 'react-bootstrap4-modal'
-import { fetchDiscount, toggleDiscount, deleteDiscount } from '../../store/actions/DiscountActions'
+import { fetchDiscount, toggleDiscount, deleteDiscount, selectDiscount } from '../../store/actions/DiscountActions'
 import { withToastManager } from 'react-toast-notifications'
 import { connect } from 'react-redux'
 import Error from '../Errors/Error'
+import Axios from 'axios'
+import { url } from '../../global'
+import fileDownload from 'js-file-download'
 
 class Discount extends Component {
 
@@ -14,13 +17,13 @@ class Discount extends Component {
             type: 'product_name',
             sort: 'asc'
         },
-        modal: false,
         deleteModal: false,
         keyword: '',
         page: 1,
         perpage: 10,
         deletedId: '',
-        filter: 'all'
+        filter: 'all',
+        printing: false
     }
 
     handleChange = (name) => (e) => {
@@ -55,6 +58,112 @@ class Discount extends Component {
 			...this.state,
            [name]: e.target.value
         })
+    }
+
+    handlePrint = (name) => (e) => {
+        const { selected, toastManager } = this.props
+        if (selected < 1) {
+            toastManager.add('Harap pilih dulu data', {
+                appearance: 'warning',
+                autoDismiss: true
+            })
+        } else {
+            if (name === 'thermal') {
+                this.handlePrintThermal()
+            } else {
+                this.handlePrintPdf()
+            }
+        }
+    }
+
+    handlePrintPdf = () => {
+        this.setState({
+            ...this.state,
+            printing: true
+        })
+
+        Axios.get(`${url}/discount/print`, {
+            headers: {
+                Authorization:`Bearer ${sessionStorage.getItem('token')}`
+            },
+            responseType: 'blob'
+        }).then(res => {
+            
+            fileDownload(res.data, 'print_label_discount.pdf');
+
+            this.setState({
+                ...this.state,
+                printing: false
+            })
+
+        }).catch(err => {
+            this.setState({
+                ...this.state,
+                printing: false,
+            })
+        })
+    }
+
+    handlePrintThermal = () => {
+
+        this.setState({
+            ...this.state,
+            printing: true
+        })
+
+        Axios.get(`${url}/discount/print-thermal`, {
+            headers: {
+                Authorization:`Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+        
+            this.handlePrintLabel(res.data.data)
+
+        })
+    }
+
+    handlePrintLabel = (data) => {
+        const { toastManager } = this.props
+        const printer = sessionStorage.getItem('printer')
+        Axios.post(`${printer}/label-discount`, {
+            data
+        }).then(res => {
+
+            toastManager.add(res.data.message, {
+                appearance: 'success',
+                autoDismiss: true
+            });
+
+            this.setState({
+                ...this.state,
+                printing: false,
+                            })
+
+        }).catch(err => {
+
+            if(!err.response) {
+                
+                toastManager.add('Printer tidak tersambung', {
+                    appearance: 'error',
+                    autoDismiss: true
+                }); 
+            
+            } else {
+
+                toastManager.add(err.response.data.message, {
+                    appearance: 'error',
+                    autoDismiss: true
+                }); 
+
+            }
+
+            this.setState({
+                ...this.state,
+                printing: false
+            })
+
+        })
+
     }
 
     handleSearch = () => {
@@ -117,8 +226,7 @@ class Discount extends Component {
     handleCloseModal = () => {
         this.setState({
             ...this.state,
-            modal: false
-        })
+                    })
     }
 
     handleDeleteModal = (id) => {
@@ -170,11 +278,16 @@ class Discount extends Component {
         
     }
 
+    handleSelected = (e) => {
+        const value = e.target.value
+        this.props.selectDiscount(value)
+    }
+
     componentDidUpdate = (prevProps) => {
 
         const { toastManager } = this.props;
 
-        if (prevProps.type !== this.props.type) {
+        if (prevProps.type !== this.props.type || prevProps.success !== this.props.success) {
             if (this.props.type === 'delete') {
                 if (this.props.success) {
 
@@ -223,8 +336,8 @@ class Discount extends Component {
 
     render() {
 
-        const { ordering, deleteModal, perpage, filter } = this.state
-        const { data, fetching, error } = this.props
+        const { ordering, deleteModal, perpage, filter, printing } = this.state
+        const { data, fetching, error, selected } = this.props
         const discounts = data && data.data
 
         const theads = [
@@ -269,6 +382,14 @@ class Discount extends Component {
                             <div className="col-md-6">
                                 <div className="d-flex justify-content-start">
                                     <Link to="/discount/create" className="btn btn-primary mr-2"><i className="mdi mdi-plus mr-2"></i>Tambah Baru</Link>
+                                    <button className={`btn btn-secondary dropdown-toggle ${printing ? 'disabled': ''}`} disabled={printing} type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{ printing ? (<i className="mdi mdi-loading mdi-spin mr-2"/>) : (<i className="mdi mdi-printer mr-2"/>) }Cetak label</button>
+                                    <div className="dropdown-menu">
+                                        <button className="dropdown-item pointer" onClick={this.handlePrint('thermal')}>Cetak dengan thermal</button>
+                                        <button className="dropdown-item pointer" onClick={this.handlePrint('pdf')}>Cetak dengan PDF</button>
+                                    </div>
+                                </div>
+                                <div className="d-flex justofy-content-start mt-2">
+                                    <small className="text-muted">Barang terpilih ({ selected ? selected : 0 })</small>
                                 </div>
                             </div>
                             <div className="col-md-6">
@@ -279,6 +400,8 @@ class Discount extends Component {
                                             <option value="all">Semua</option>
                                             <option value="active">Hanya yang aktif</option>
                                             <option value="inactive">Hanya yang tidak aktif</option>
+                                            <option value="selected">Hanya yang dipilih</option>
+                                            <option value="unselected">Hanya yang tidak dipilih</option>
                                         </select>
                                     </div>
                                     <div className="form-group">
@@ -306,7 +429,14 @@ class Discount extends Component {
                                     ) : discounts && discounts.length > 0 ? discounts.map(discount => {
                                         return (
                                             <tr key={discount._id}>
-                                                <td>{discount.product && discount.product.name}</td>
+                                                <td>
+                                                    <div className="form-check mt-0">
+                                                        <input className="form-check-input" id={discount._id} onClick={this.handleSelected} value={discount._id} type="checkbox" defaultChecked={discount.selected ? true : false} />
+                                                        <label className="form-check-label" htmlFor={discount._id}>
+                                                            {discount.product && discount.product.name}
+                                                        </label>
+                                                    </div>
+                                                </td>
                                                 <td>{discount.amount_formatted}</td>
                                                 <td>{discount.valid_thru_formatted}</td>
                                                 <td>{discount.term_formatted}</td>
@@ -391,6 +521,7 @@ const mapStateToProps = (state) => {
         type: state.discount.type,
         success: state.discount.success,
         message: state.discount.message,
+        selected: state.discount.selected
     }
 }
 
@@ -399,6 +530,7 @@ const mapDispatchToProps = (dispatch) => {
         fetchDiscount: (params) => dispatch(fetchDiscount(params)),
         toggleDiscount: (id) => dispatch(toggleDiscount(id)),
         deleteDiscount: (id) => dispatch(deleteDiscount(id)),
+        selectDiscount: (id) => dispatch(selectDiscount(id))
     }
 }
 

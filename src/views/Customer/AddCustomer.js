@@ -60,7 +60,7 @@ class AddCustomer extends Component {
 
     componentDidUpdate = (prevProps) => {
        
-        if (prevProps.type !== this.props.type) {
+        if (prevProps.type !== this.props.type || prevProps.success !== this.props.success) {
             if (this.props.type === 'save') {
                 const { toastManager } = this.props;
                 

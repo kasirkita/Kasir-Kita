@@ -71,6 +71,7 @@ const saveSales = (data) => {
     return (dispatch, getState) => {
         
         const {
+            number,
             customer_id,
             customer_name,
             customer_type,
@@ -90,6 +91,7 @@ const saveSales = (data) => {
         })
 
         Axios.post(`${url}/cashier`, {
+                number,
                 customer_id,
                 customer_name,
                 customer_type,

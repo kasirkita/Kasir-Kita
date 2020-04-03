@@ -7,6 +7,7 @@ const initState = {
     success: null,
     type: null,
     sales: null,
+    carts: null
 }
 
 const salesReducer = (state = initState, action) => {
@@ -50,7 +51,7 @@ const salesReducer = (state = initState, action) => {
                 fetching: false,
                 fetched: true,
                 message: action.message,
-                sales: action.data,
+                carts: action.data,
                 type: 'save',
                 success: true
             }

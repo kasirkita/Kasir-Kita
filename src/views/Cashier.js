@@ -6,11 +6,12 @@ import { url } from '../global'
 import FormatNumber from '../components/FormatNumber'
 import AsyncSelect from 'react-select/async'
 import { connect } from 'react-redux'
-import { saveSales } from '../store/actions/SalesActions'
+import { saveSales, getSales } from '../store/actions/SalesActions'
 import moment from 'moment'
 
 class Cashier extends Component {
     state = {
+        number: '',
         carts: [],
         payModal: false,
         code: '',
@@ -298,7 +299,35 @@ class Cashier extends Component {
         
         const { toastManager } = this.props;
 
-        if (prevProps.type !== this.props.type || prevProps.success !== this.props.success || prevProps.sales !== this.props.sales) {
+        if (prevProps.type !== this.props.type || prevProps.success !== this.props.success || prevProps.sales !== this.props.sales || this.props.carts !== prevProps.carts) {
+            
+            if (this.props.type === 'get') {
+                const {
+                    number,
+                    customer,
+                    customer_name,
+                    customer_id,
+                    amount,
+                    payment_type,
+                    details
+                } = this.props.sales
+    
+                this.setState({
+                    number,
+                    customer_id,
+                    customer_name,
+                    customer_type: customer && customer.type,
+                    cash: amount,
+                    payment: payment_type,
+                    carts: details ? details.map(detail => {
+                        return {
+                            ...detail.product,
+                            qty: detail.qty
+                        }
+                    }) : []
+                })
+            }
+            
             if (this.props.type === 'save') {
                 
                 if (this.props.success) {
@@ -309,9 +338,13 @@ class Cashier extends Component {
                     });
                     
                     if (this.state.withPrint) {
-                        this.handlePrint(this.props.sales)
+                        this.handlePrint(this.props.carts)
                     } else {
-                        this.handleReset()
+                        if (this.props.match.params.id) {
+                            this.props.history.push('/cashier')
+                        } else {
+                            this.handleReset()
+                        }
                     }
     
                 } else {
@@ -352,7 +385,11 @@ class Cashier extends Component {
         }
 
         Axios.post(`${printer}/receipt`, data).then(res => {
-            this.handleReset()
+            if (this.props.match.params.id) {
+                this.props.history.push('/cashier')
+            } else {
+                this.handleReset()
+            }
         }).catch(err => {
             if(!err.response) {
                 
@@ -391,7 +428,14 @@ class Cashier extends Component {
         })
     }
 
+    componentDidMount = () => {
+        if (this.props.match.params.id) {
+            this.props.getSales(this.props.match.params.id)
+        }
+    }
+
     render() {
+        console.log(this.state.carts)
         const { payModal, carts, code, customer_id, customer_name, products, keyword, customer_type, cash, payment } = this.state
         const { fetching } = this.props
         const total = carts.reduce((total, cart) => {
@@ -719,13 +763,15 @@ const mapStateToProps = state => {
         message: state.sales.message,
         success: state.sales.success,
         sales: state.sales.sales,
-        type: state.sales.type
+        type: state.sales.type,
+        carts: state.sales.carts
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveSales: data => dispatch(saveSales(data))
+        saveSales: data => dispatch(saveSales(data)),
+        getSales: id => dispatch(getSales(id))
     }
 }
 

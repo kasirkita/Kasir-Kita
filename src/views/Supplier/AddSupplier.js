@@ -39,7 +39,7 @@ class AddSupplier extends Component {
        
         const { toastManager } = this.props;
 
-        if (prevProps.type !== this.props.type) {
+        if (prevProps.type !== this.props.type || prevProps.success !== this.props.success) {
             if (this.props.type === 'save') {
                 
                 if (this.props.success) {
@@ -110,7 +110,7 @@ class AddSupplier extends Component {
                         
                         <div className="form-group">
                             <label className="control-label">Email</label>
-                            <input value={email} onChange={this.handleChange('email')} type="email" className={`form-control  ${ validate && validate.email && 'is-invalid'}`} placeholder="Email Pemasok"/>
+                            <input value={email} onChange={this.handleChange('email')} type="email" className={`form-control  ${ validate && validate.email ? 'is-invalid' : ''}`} placeholder="Email Pemasok"/>
                             {
                                 validate && validate.email  && (
                                     <div className="invalid-feedback">{ validate.email[0] }</div>

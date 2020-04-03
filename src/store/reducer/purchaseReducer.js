@@ -6,31 +6,30 @@ const initState = {
     error: null,
     success: null,
     type: null,
-    discount: null,
-    selected: null
+    purchase: null,
 }
 
-const discountReducer = (state = initState, action) => {
+const purchaseReducer = (state = initState, action) => {
     switch (action.type) {
-        case 'FETCH_DISCOUNT_PENDING':
+        case 'FETCH_PURCHASE_PENDING':
             return {
                 ...state,
                 fetching: true,
                 error: null
             }
-        case 'FETCH_DISCOUNT_SUCCESS':
+        case 'FETCH_PURCHASE_SUCCESS':
 
             return {
                 ...state,
                 fetching: false,
                 fetched: true,
                 data: action.data,
-                selected: action.selected,
                 success: true,
+                selected: action.selected,
                 type: 'fetch'
             }
 
-        case 'FETCH_DISCOUNT_FAILED':
+        case 'FETCH_PURCHASE_FAILED':
             return {
                 ...state,
                 fetching: false,
@@ -40,12 +39,12 @@ const discountReducer = (state = initState, action) => {
                 success: false,
                 type: 'fetch'
             }
-        case 'SAVE_DISCOUNT_PENDING':
+        case 'SAVE_PURCHASE_PENDING':
             return {
                 ...state,
                 fetching: true,
             }
-        case 'SAVE_DISCOUNT_SUCCESS':
+        case 'SAVE_PURCHASE_SUCCESS':
 
             return {
                 ...state,
@@ -56,7 +55,7 @@ const discountReducer = (state = initState, action) => {
                 success: true
             }
 
-        case 'SAVE_DISCOUNT_FAILED':
+        case 'SAVE_PURCHASE_FAILED':
             return {
                 ...state,
                 fetching: false,
@@ -66,23 +65,23 @@ const discountReducer = (state = initState, action) => {
                 type: 'save',
                 success: false
             }
-        case 'GET_DISCOUNT_PENDING':
+        case 'GET_PURCHASE_PENDING':
             return {
                 ...state,
                 fetching: true,
             }
-        case 'GET_DISCOUNT_SUCCESS':
+        case 'GET_PURCHASE_SUCCESS':
 
             return {
                 ...state,
                 fetching: false,
                 fetched: true,
                 type: 'get',
-                discount: action.data,
+                purchase: action.data,
                 success: true
             }
 
-        case 'GET_DISCOUNT_FAILED':
+        case 'GET_PURCHASE_FAILED':
             return {
                 ...state,
                 fetching: false,
@@ -92,12 +91,12 @@ const discountReducer = (state = initState, action) => {
                 type: 'get',
                 success: false
             }
-        case 'UPDATE_DISCOUNT_PENDING':
+        case 'UPDATE_PURCHASE_PENDING':
             return {
                 ...state,
                 fetching: true,
             }
-        case 'UPDATE_DISCOUNT_SUCCESS':
+        case 'UPDATE_PURCHASE_SUCCESS':
 
             return {
                 ...state,
@@ -108,7 +107,7 @@ const discountReducer = (state = initState, action) => {
                 success: true
             }
 
-        case 'UPDATE_DISCOUNT_FAILED':
+        case 'UPDATE_PURCHASE_FAILED':
             return {
                 ...state,
                 fetching: false,
@@ -118,12 +117,12 @@ const discountReducer = (state = initState, action) => {
                 type: 'update',
                 success: false
             }
-        case 'TOGGLE_DISCOUNT_PENDING':
+        case 'TOGGLE_PURCHASE_PENDING':
             return {
                 ...state,
                 // fetching: true,
             }
-        case 'TOGGLE_DISCOUNT_SUCCESS':
+        case 'TOGGLE_PURCHASE_SUCCESS':
 
             return {
                 ...state,
@@ -134,7 +133,7 @@ const discountReducer = (state = initState, action) => {
                 // success: true
             }
 
-        case 'TOGGLE_DISCOUNT_FAILED':
+        case 'TOGGLE_PURCHASE_FAILED':
             return {
                 ...state,
                 // fetching: false,
@@ -144,12 +143,12 @@ const discountReducer = (state = initState, action) => {
                 type: 'toggle',
                 // success: false
             }
-        case 'DELETE_DISCOUNT_PENDING':
+        case 'DELETE_PURCHASE_PENDING':
             return {
                 ...state,
                 fetching: true,
             }
-        case 'DELETE_DISCOUNT_SUCCESS':
+        case 'DELETE_PURCHASE_SUCCESS':
 
             return {
                 ...state,
@@ -160,7 +159,7 @@ const discountReducer = (state = initState, action) => {
                 success: true
             }
 
-        case 'DELETE_DISCOUNT_FAILED':
+        case 'DELETE_PURCHASE_FAILED':
             return {
                 ...state,
                 fetching: false,
@@ -170,36 +169,10 @@ const discountReducer = (state = initState, action) => {
                 type: 'delete',
                 success: false
             }
-        case 'SELECT_DISCOUNT_PENDING':
-            return {
-                ...state,
-                // fetching: true,
-            }
-        case 'SELECT_DISCOUNT_SUCCESS':
-
-            return {
-                ...state,
-                selected: action.selected
-                // fetching: false,
-                // fetched: true,
-                // message: action.message,
-                // type: 'toggle',
-                // success: true
-            }
-
-        case 'SELECT_DISCOUNT_FAILED':
-            return {
-                ...state,
-                // fetching: false,
-                // fetched: true,
-                error: action.error,
-                // message: action.message,
-                type: 'toggle',
-                // success: false
-            }
+       
         default:
             return state
     }
 }
 
-export default discountReducer
+export default purchaseReducer

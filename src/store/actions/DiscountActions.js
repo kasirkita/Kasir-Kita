@@ -334,4 +334,47 @@ const deleteDiscount = (id) => {
     }
 }
 
-export { fetchDiscount, saveDiscount, getDiscount, updateDiscount, toggleDiscount, deleteDiscount }
+const selectDiscount = (id) => {
+    return (dispatch, getState) => {
+        dispatch({
+            type: 'SELECT_DISCOUNT_PENDING',
+        })
+
+        Axios.get(`${url}/discount/select/${id}`,{
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+            dispatch({
+                type: 'SELECT_DISCOUNT_SUCCESS',
+                message: res.data.message,
+                selected: res.data.selected,
+                success: true
+            })
+        }).catch(error => {
+            if (!error.response) {
+                dispatch({
+                    type: 'SELECT_DISCOUNT_FAILED',
+                    error: {
+                        status: null,
+                        connection: true,
+                        statusText: 'Koneksi Terputus',
+                        data: {
+                            message: 'Silahkan periksa koneksi backend, lihat tutorial di sini https://github.com/kasirkita/Kasir-Kita'
+                        }
+                    }
+                })
+
+            } else {
+
+                dispatch({
+                    type: 'SELECT_DISCOUNT_FAILED',
+                    error: error.response,
+                    message: error.response.data.message
+                })
+            }
+        })
+    }
+}
+
+export { fetchDiscount, saveDiscount, getDiscount, updateDiscount, toggleDiscount, deleteDiscount, selectDiscount }

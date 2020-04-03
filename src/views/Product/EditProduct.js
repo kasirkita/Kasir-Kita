@@ -64,7 +64,7 @@ class AddProduct extends Component {
        
         const { toastManager } = this.props
 
-        if (prevProps.type !== this.props.type) {
+        if (prevProps.type !== this.props.type || prevProps.success !== this.props.success) {
             if (this.props.type === 'update') {
                 
                 if (this.props.success) {

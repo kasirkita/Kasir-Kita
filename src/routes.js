@@ -40,6 +40,7 @@ import ViewUser from './views/User/ViewUser';
 import EditCustomer from './views/Customer/EditCustomer';
 import EditSupplier from './views/Supplier/EditSupplier';
 import EditDiscount from './views/Discount/EditDiscount';
+import ViewSales from './views/Sales/ViewSales';
 
 export default [
     {
@@ -62,6 +63,12 @@ export default [
     },
     {
         path: '/cashier',
+        exact: true,
+        layout: DefaultScreen,
+        component: Cashier
+    },
+    {
+        path: '/cashier/:id',
         exact: true,
         layout: DefaultScreen,
         component: Cashier
@@ -107,6 +114,12 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: Sales
+    },
+    {
+        path: '/sales/view/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: ViewSales
     },
     {
         path: '/purchase',

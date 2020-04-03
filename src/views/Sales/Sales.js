@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { withToastManager } from 'react-toast-notifications'
 import { Link } from 'react-router-dom'
 import Modal from 'react-bootstrap4-modal'
+import Error from '../Errors/Error'
 
 class Sales extends Component {
     state = {
@@ -182,7 +183,7 @@ class Sales extends Component {
     }
 
     handleDelete = () => {
-        this.props.deleteUser(this.state.deletedId)
+        this.props.deleteSales(this.state.deletedId)
     }
 
     handleClickPage = (page) => {
@@ -212,6 +213,38 @@ class Sales extends Component {
         })
     }
 
+    componentDidUpdate = (prevProps) => {
+
+        const { toastManager } = this.props;
+
+        if (prevProps.type !== this.props.type || prevProps.success !== this.props.success) {
+            if (this.props.type === 'delete') {
+                if (this.props.success) {
+
+                    toastManager.add(this.props.message, {
+                        appearance: 'success',
+                        autoDismiss: true
+                    })
+
+                    this.setState({
+                        ...this.state,
+                        deleteModal: false
+                    })
+                    
+                    this.props.fetchSales(this.state)
+
+                } else {
+
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    })
+
+                }
+            }
+        }
+    }
+
     componentDidMount() {
         const {
             start_date,
@@ -236,7 +269,10 @@ class Sales extends Component {
 
     render() {
         const { start_date, end_date, ordering, deleteModal, perpage } = this.state
-        const { data, fetching } = this.props
+        const { data, fetching, error } = this.props
+
+        if (error && error.status !== 422)
+            return <Error title={error.statusText} message={error.data.message} code={error.status} connection={error.connection} />
 
         const sales = data && data.data
 
@@ -261,7 +297,7 @@ class Sales extends Component {
                             <h5 className="modal-title">Hapus Penjualan</h5>
                         </div>
                         <div className="modal-body">
-                            <p>Apakah anda yakin? Harap berhati-hati, data yang di hapus tidak bisa di kembalikan</p>
+                            <p>Apakah anda yakin? Harap berhati-hati, data yang di hapus tidak bisa di kembalikan, dan stok yang sudah berkurang tidak bisa kembali</p>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={this.handleCloseDeleteModal}><i className="mdi mdi-close mr-2"></i>Tutup</button>
@@ -338,7 +374,10 @@ class Sales extends Component {
                                                     { sales.status === 'done' ? (
                                                         <Link to={`/sales/view/${sales._id}`} className="btn p-0 text-info btn-link btn-sm">Lihat</Link>
                                                     ) : (
-                                                        <Link to={`/cashier/${sales._id}`} className="btn p-0 text-info btn-link btn-sm">Selesaikan</Link>
+                                                        <Fragment>
+                                                            <Link to={`/sales/view/${sales._id}`} className="btn p-0 text-info btn-link btn-sm mr-2">Lihat</Link>
+                                                            <Link to={`/cashier/${sales._id}`} className="btn p-0 text-warning btn-link btn-sm">Selesaikan</Link>
+                                                        </Fragment>
                                                     ) }
                                                     
                                                 </td>
