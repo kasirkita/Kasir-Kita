@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
-import '../../../node_modules/react-datepicker/dist/react-datepicker.css'
+import 'react-datepicker/dist/react-datepicker.css'
 import AsyncSelect from 'react-select/async'
 import Select from 'react-select'
 import Axios from 'axios'
@@ -225,6 +225,13 @@ class EditDiscount extends Component {
                                 <NumberFormat value={quota} onValueChange={(e) => this.handleChange('quota', e.floatValue ? e.floatValue : '')} className="form-control text-right" placeholder="Kuota" />
                             </div>
                         </div>
+
+                        <div className="col-md-12">
+                            <div className="help-block text-muted">
+                                *) Mengkosongkan kuota berarti promo tidak terbatas
+                            </div>
+                        </div>
+                        
                     </div>
 
 

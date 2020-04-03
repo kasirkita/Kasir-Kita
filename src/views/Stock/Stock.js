@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import DatePicker from 'react-datepicker'
-import '../../../node_modules/react-datepicker/dist/react-datepicker.css'
+import 'react-datepicker/dist/react-datepicker.css'
 import Table from '../../components/Table'
 import Select from 'react-select'
 import Modal from 'react-bootstrap4-modal'

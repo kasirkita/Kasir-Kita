@@ -16,7 +16,7 @@ Silahkan ketikan perinta `yarn build` atau `npm build` lalu akan otomatis hasil 
 Aplikasi ini 100% Gratis, tetapi jika menginginkan penambahan fitur dan atau cara menjalakan aplikasi silahkan chat melalui whatsapp 089611081675
 Adapun ketentuan pada penggunaan aplikasi ini adalah
 
-- Tidak boleh dikomersilkan dalam bentuk apapun
+- Tidak boleh dikomersilkan dalam bentuk apapun tanpa sepengetahuan author
 - Tidak boleh menyalin dan menyebarkan ulang kode tanpa sepengetahuan author
 - Tidak boleh menghapus credit pada aplikasi
 
@@ -29,10 +29,10 @@ Jika merasa aplikasi ini berguna, silakan melakukan dukungan dengan cara berdona
   <tbody>
     <tr>
         <td>
-          <img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/dana.png" alt="Dana" width="120" / >           
+          <img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/dana.png" alt="Dana" width="120" />           
         </td>
         <td>
-          <img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/ovo.png" alt="Ovo" width="120" /    >        
+          <img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/ovo.png" alt="Ovo" width="120" />        
         </td>
         <td>
           <img src="https://github.com/kasirkita/Kasir-Kita/raw/master/github/paypal.png" alt="Paypal" width="120" />            
@@ -47,3 +47,4 @@ Jika merasa aplikasi ini berguna, silakan melakukan dukungan dengan cara berdona
 - Razaq Hakim
 - Yulianto Saparudin
 - Rega Rivaldi
+- Muhammad Irfan

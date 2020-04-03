@@ -516,10 +516,20 @@ class Cashier extends Component {
                                             <div className="form-group">
                                                 <label className="control-label">Pembayaran</label>
                                                 <div className="col p-0 mb-3">
-                                                    <div className="btn-group" role="group" aria-label="Basic example">
+                                                    <div className="btn-group mb-2" role="group" aria-label="Basic example">
+                                                        <button type="button" value={5000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 5{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                        <button type="button" value={10000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 10{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                        <button type="button" value={15000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 15{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                    </div>
+                                                    <div className="btn-group mb-2" role="group" aria-label="Basic example">
                                                         <button type="button" value={20000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 20{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                        <button type="button" value={25000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 25{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                        <button type="button" value={30000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 30{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                    </div>
+                                                    <div className="btn-group mb-2" role="group" aria-label="Basic example">
                                                         <button type="button" value={50000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 50{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
-                                                        <button type="button" value={100000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 100{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                        <button type="button" value={70000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 70{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                        <button type="button" value={10000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 100{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
                                                     </div>
                                                 </div>
                                                 <FormatNumber value={cash} handleChangeNumber={this.handleChangeNumber('cash')} className="form-control text-right" placeholder="Rp. 0"/>
@@ -666,7 +676,7 @@ class Cashier extends Component {
 
                     <div className="col-md-12 mt-3 text-right">
                         <button className="btn btn-primary mr-2" onClick={this.handlePayModal}><i className="mdi mdi-cash mr-2"></i>Bayar</button>
-                        <button className="btn btn-success mr-2"><i className="mdi mdi-clock mr-2"></i>Tahan</button>
+                        <button className={`btn btn-success mr-2 ${fetching ? 'btn-disabled': '' }`} disabled={fetching} onClick={() => this.handlePay(false, 'hold')}>{ fetching ? <i className="mdi mdi-loading mdi-spin mr-2" /> :  <i className="mdi mdi-clock mr-2" /> } Tahan</button>
                         <button className="btn btn-secondary" onClick={this.handleEmptyCart}><i className="mdi mdi-delete mr-2"></i>Hapus transaksi</button>
                     </div>
 

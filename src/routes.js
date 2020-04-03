@@ -8,7 +8,7 @@ import Cashier from './views/Cashier';
 import Product from './views/Product/Product';
 import AddProduct from './views/Product/AddProduct';
 import Category from './views/Category/Category';
-import Sales from './views/Sales';
+import Sales from './views/Sales/Sales';
 import Purchase from './views/Purchase/Purchase';
 import AddPurchase from './views/Purchase/AddPurchase';
 import Expense from './views/Expense/Expense';

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
-import '../../../node_modules/react-datepicker/dist/react-datepicker.css'
+import 'react-datepicker/dist/react-datepicker.css'
 import Select from 'react-select'
 import AddProduct from '../Product/AddProduct'
 import Modal from 'react-bootstrap4-modal'

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import AsyncSelect from 'react-select/async';
 import DatePicker from 'react-datepicker'
-import '../../../node_modules/react-datepicker/dist/react-datepicker.css'
+import 'react-datepicker/dist/react-datepicker.css'
 import { url } from '../../global';
 import Axios from 'axios';
 import { saveUser } from '../../store/actions/UserActions';

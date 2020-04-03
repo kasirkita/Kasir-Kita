@@ -1,5 +1,6 @@
 import Axios from 'axios'
 import { url } from '../../global'
+import moment from 'moment'
 
 const fetchSales = (params) => {
     return (dispatch, getState) => {
@@ -9,7 +10,9 @@ const fetchSales = (params) => {
             perpage,
             keyword,
             ordering,
-            filter
+            filter,
+            start_date,
+            end_date
         } = params
         
         dispatch({
@@ -22,7 +25,9 @@ const fetchSales = (params) => {
                 perpage,
                 keyword,
                 ordering,
-                filter
+                filter,
+                start_date: moment(start_date).format('YYYY-MM-DD'),
+                end_date: moment(end_date).format('YYYY-MM-DD')
             },
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem('token')}`
