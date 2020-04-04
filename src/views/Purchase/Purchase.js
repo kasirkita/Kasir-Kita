@@ -166,7 +166,7 @@ class Purchase extends Component {
     }
 
     handleDelete = () => {
-        this.props.deleteUser(this.state.deletedId)
+        this.props.deletePurchase(this.state.deletedId)
     }
 
     handleClickPage = (page) => {
@@ -258,6 +258,7 @@ class Purchase extends Component {
         const purchases = data && data.data
 
         const theads = [
+            { name: 'payment_date', value: 'Tanggal Pembelian', sortable: true},
             { name: 'number', value: '#', sortable: true },
             { name: 'supplier_name', value: 'Pemasok', sortable: true },
             { name: 'total', value: 'Total Pesanan', sortable: true },
@@ -333,12 +334,13 @@ class Purchase extends Component {
                         {
                                 fetching ? (
                                     <tr>
-                                        <td className="text-center" colSpan="5"><i className="mdi mdi-loading mdi-spin mr-2"></i>Loading ...</td>
+                                        <td className="text-center" colSpan="6"><i className="mdi mdi-loading mdi-spin mr-2"></i>Loading ...</td>
                                     </tr>
 
                                 ) : purchases && purchases.length > 0 ? purchases.map(purchase => {
                                     return (
                                             <tr key={purchase._id}>
+                                                <td>{purchase.payment_date_formatted}</td>
                                                 <td>{purchase.number}</td>
                                                 <td>{purchase.supplier && purchase.supplier.name}</td>
                                                 <td className="text-right">{purchase.total_formatted}</td>
@@ -353,7 +355,7 @@ class Purchase extends Component {
                                 
                                 : (
                                     <tr>
-                                        <td className="text-center" colSpan="5">Belum ada data</td>
+                                        <td className="text-center" colSpan="6">Belum ada data</td>
                                     </tr>
                                 )
                                 

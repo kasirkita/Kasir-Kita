@@ -284,7 +284,7 @@ class AddPurchase extends Component {
                     });
                     
                     
-                    this.props.history.push('/purcahse')
+                    this.props.history.push('/purchase')
     
                 } else {
     
@@ -383,7 +383,7 @@ class AddPurchase extends Component {
                         <AsyncSelect onChange={this.handleChangeSelect('in_charge')} value={ in_charge_id && { 
                             label: in_charge_name,
                             value: in_charge_id
-                         }  } isClearable placeholder="Pilih Pemasok" cacheOptions defaultOptions loadOptions={getUserList} />
+                         }  } isClearable placeholder="Pilih Penanggung Jawab" cacheOptions defaultOptions loadOptions={getUserList} />
                     </div>
 
                     <div className="form-group">
@@ -434,7 +434,7 @@ class AddPurchase extends Component {
                             </button>
                         </div>
                         <div className="col-md-12 mt-4">
-                            <table className="table table table-scrollable-two">
+                            <table className="table table-scrollable-two">
                                 <thead className="thead-light">
                                     <tr>
                                         <th>Nama</th>

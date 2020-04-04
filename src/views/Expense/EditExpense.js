@@ -3,15 +3,16 @@ import { Link } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import AsyncSelect from 'react-select/async'
-import { saveExpense } from '../../store/actions/ExpenseActions'
+import { updateExpense, getExpense } from '../../store/actions/ExpenseActions'
 import { connect } from 'react-redux'
 import { withToastManager } from 'react-toast-notifications'
 import FormatNumber from '../../components/FormatNumber'
 import Error from '../Errors/Error'
 import Axios from 'axios'
 import { url } from '../../global'
+import  moment from 'moment'
 
-class AddExpense extends Component {
+class EditExpense extends Component {
 
     state = {
         payment_date: new Date(),
@@ -94,8 +95,8 @@ class AddExpense extends Component {
         })
     }
 
-    handleSave = () => {
-        this.props.saveExpense(this.state)
+    handleUpdate = () => {
+        this.props.updateExpense(this.props.match.params.id, this.state)
     }
  
     componentDidUpdate = (prevProps) => {
@@ -104,7 +105,7 @@ class AddExpense extends Component {
 
         if (prevProps.type !== this.props.type || prevProps.success !== this.props.success) {
             
-            if (this.props.type === 'save') {
+            if (this.props.type === 'update') {
                 
                 if (this.props.success) {
     
@@ -124,7 +125,45 @@ class AddExpense extends Component {
                     });
                 }
             }
+
+            if (this.props.type === 'get') {
+
+                if (this.props.success) {
+
+                    
+                    if (this.props.expense !== prevProps.expense) {
+                        
+                        const { expense } = this.props
+
+                        this.setState({
+                            ...this.state,
+                            payment_date: moment(expense.payment_date).toDate(),
+                            number: expense.number,
+                            supplier_name: expense.supplier_name,
+                            product_name: expense.product_name,
+                            price: expense.price,
+                            qty: expense.qty,
+                            in_charge_id: expense.in_charge_id,
+                            in_charge_name: expense.in_charge_name,
+                            notes: expense.notes,
+                            user: expense.user
+                        })
+                    }
+    
+                } else {
+    
+                    toastManager.add(this.props.message, {
+                        appearance: 'error',
+                        autoDismiss: true
+                    });
+                }
+            }
+
         }
+    }
+
+    componentWillMount = () => {
+        this.props.getExpense(this.props.match.params.id)
     }
 
     render() {
@@ -233,7 +272,7 @@ class AddExpense extends Component {
 
                 <div className="col-md-12 mt-2 text-right mb-5">
                     <hr/>
-                    <button onClick={this.handleSave} className={`btn btn-primary mr-2 ${fetching ? 'btn-disabled' : ''}`} disabled={fetching}> {fetching ? (<i className="mdi mdi-loading mdi-spin mr-2"></i>) : (<i className="mdi mdi-content-save mr-2"></i>) }Simpan</button>
+                    <button onClick={this.handleUpdate} className={`btn btn-primary mr-2 ${fetching ? 'btn-disabled' : ''}`} disabled={fetching}> {fetching ? (<i className="mdi mdi-loading mdi-spin mr-2"></i>) : (<i className="mdi mdi-content-save mr-2"></i>) }Simpan Perubahan</button>
                     <button onClick={this.handleReset} className="btn btn-secondary"><i className="mdi mdi-reload mr-2"></i>Reset</button>
                 </div>
 
@@ -279,14 +318,16 @@ const mapStateToProps = state => {
         message: state.expense.message,
         success: state.expense.success,
         type: state.expense.type,
-        error: state.expense.error
+        error: state.expense.error,
+        expense: state.expense.expense
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        saveExpense: data => dispatch(saveExpense(data))
+        updateExpense: (id, data) => dispatch(updateExpense(id, data)),
+        getExpense: id => dispatch(getExpense(id))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(AddExpense))
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(EditExpense))

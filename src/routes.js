@@ -41,6 +41,9 @@ import EditCustomer from './views/Customer/EditCustomer';
 import EditSupplier from './views/Supplier/EditSupplier';
 import EditDiscount from './views/Discount/EditDiscount';
 import ViewSales from './views/Sales/ViewSales';
+import ViewPurchase from './views/Purchase/ViewPurchase';
+import ViewExpense from './views/Expense/ViewExpense';
+import EditExpense from './views/Expense/EditExpense';
 
 export default [
     {
@@ -134,6 +137,12 @@ export default [
         component: AddPurchase
     },
     {
+        path: '/purchase/view/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: ViewPurchase
+    },
+    {
         path: '/expense',
         exact: true,
         layout: DefaultScreen,
@@ -144,6 +153,18 @@ export default [
         exact: true,
         layout: DefaultScreen,
         component: AddExpense
+    },
+    {
+        path: '/expense/view/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: ViewExpense
+    },
+    {
+        path: '/expense/edit/:id',
+        exact: true,
+        layout: DefaultScreen,
+        component: EditExpense
     },
     {
         path: '/stock',

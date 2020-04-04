@@ -4,7 +4,7 @@ import { getSales } from '../../store/actions/SalesActions'
 import { connect } from 'react-redux'
 import { withToastManager } from 'react-toast-notifications'
 import { Link } from 'react-router-dom'
-class Sales extends Component {
+class ViewSales extends Component {
     
     componentDidMount() {
         this.props.getSales(this.props.match.params.id)
@@ -142,4 +142,4 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(Sales))
+export default connect(mapStateToProps, mapDispatchToProps)(withToastManager(ViewSales))

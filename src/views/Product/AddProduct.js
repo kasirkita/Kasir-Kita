@@ -25,11 +25,7 @@ class AddProduct extends Component {
     }
 
     handleSave = () => {
-        if (this.props.isModal) {
-            this.props.onFinish()
-        } else {
-            this.props.saveProduct(this.state)
-        }
+        this.props.saveProduct(this.state)
     }
 
     handleChange = (name) => (e) => {
@@ -71,13 +67,17 @@ class AddProduct extends Component {
                 const { toastManager } = this.props;
                 
                 if (this.props.success) {
-    
-                    toastManager.add(this.props.message, {
-                        appearance: 'success',
-                        autoDismiss: true
-                    });
-    
-                    return this.props.history.push('/product')
+                    
+                    if (this.props.isModal) {
+                        this.props.onFinish()
+                    } else {
+                        toastManager.add(this.props.message, {
+                            appearance: 'success',
+                            autoDismiss: true
+                        });
+        
+                        return this.props.history.push('/product')
+                    }
     
                 } else {
     

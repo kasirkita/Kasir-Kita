@@ -435,7 +435,7 @@ class Cashier extends Component {
     }
 
     render() {
-        console.log(this.state.carts)
+
         const { payModal, carts, code, customer_id, customer_name, products, keyword, customer_type, cash, payment } = this.state
         const { fetching } = this.props
         const total = carts.reduce((total, cart) => {
@@ -647,7 +647,7 @@ class Cashier extends Component {
                                 defaultOptions
                             />
                         </div>
-                        <table className="table table-scrollable">
+                        <table className="table table-scrollable-two">
                             <thead className="thead-light">
                                 <tr>
                                     <th>Nama</th>
@@ -658,7 +658,7 @@ class Cashier extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {
+                            {
                                     carts ? carts.map(cart => { 
 
                                         const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : cart.price * (cart.discount_amount / 100) : 0
@@ -691,28 +691,33 @@ class Cashier extends Component {
 
                                         return (
                                             <tr key={cart._id}>
-                                                <td>{cart.name}</td>
-                                                <td className="text-right">{ customer_type === 'wholesaler' ? cart.wholesale_formatted : cart.price_formatted}</td>
-                                                <td className="text-center" width="120"><input style={{width: '50%', margin: 'auto'}} type="number" value={cart.qty} min="1" onChange={(e) => this.handleUpdateQty(e.target.value, cart._id) } className="form-control text-right" /></td>
-                                                <td className="text-right"><FormatNumber value={discount} type="text" /></td>
-                                                <td className="text-right">
-                                                    <FormatNumber value={ subtotal } type="text" />
-                                                    <button onClick={ () => this.handleDeleteCart(cart._id)  } className="btn btn-link text-danger btn-remove">&times;</button>
+                                                <td style={{width: '195px'}}>{cart.name}</td>
+                                                <td style={{width: '195px'}} className="text-right">{ customer_type === 'wholesaler' ? cart.wholesale_formatted : cart.price_formatted}</td>
+                                                <td style={{width: '195px'}} className="text-center" width="120"><input style={{width: '50%', margin: 'auto'}} type="number" value={cart.qty} min="1" onChange={(e) => this.handleUpdateQty(e.target.value, cart._id) } className="form-control text-right" /></td>
+                                                <td style={{width: '195px'}} className="text-right"><FormatNumber value={discount} type="text" /></td>
+                                                <td style={{width: '195px'}} className="text-right">
+                                                    <div style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                                                        <FormatNumber value={ subtotal } type="text" />
+                                                        <button onClick={ () => this.handleDeleteCart(cart._id)  } className="btn btn-link text-danger btn-remove p-0 pl-2">&times;</button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         )
                                     }).sort().reverse() : (
 
-                                        <tr>
-                                            <td colSpan="4" className="text-center">Belum ada data</td>
+                                        <tr style={{display: 'flex'}}>
+                                            <td colSpan="5" style={{margin: 'auto'}} className="text-center">Belum ada data</td>
                                         </tr>
                                     )
                                 }
                             </tbody>
+
                             <tfoot>
                                 <tr>
-                                    <th className="text-right" colSpan="3">Total</th>
-                                    <th className="text-right"><FormatNumber value={(total + tax) - total_discount} type="text" /></th>
+                                    <th className="text-right" colSpan="5" style={{width: '80%'}}>Total</th>
+                                    <th className="text-right" style={{width: '1%'}}>
+                                        <FormatNumber type="text" value={total} />
+                                    </th>
                                 </tr>
                             </tfoot>
                         </table>
