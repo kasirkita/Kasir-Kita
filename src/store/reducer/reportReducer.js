@@ -91,6 +91,34 @@ const reportReducer = (state = initState, action) => {
                 success: false,
                 type: 'fetch'
             }
+
+        case 'FETCH_STOCK_REPORT_PENDING':
+            return {
+                ...state,
+                fetching: true,
+                error: null
+            }
+        case 'FETCH_STOCK_REPORT_SUCCESS':
+
+            return {
+                ...state,
+                fetching: false,
+                fetched: true,
+                data: action.data,
+                success: true,
+                type: 'fetch'
+            }
+
+        case 'FETCH_STOCK_REPORT_FAILED':
+            return {
+                ...state,
+                fetching: false,
+                fetched: true,
+                error: action.error,
+                message: action.error.data.message,
+                success: false,
+                type: 'fetch'
+            }
         default:
             return state
     }
