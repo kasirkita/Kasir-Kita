@@ -172,7 +172,7 @@ class Welcome extends Component {
                             <div className="col-md-12 text-right">
                                 {
                                     agree ? registerFetching ? (
-                                        <button type="button" className="btn btn-primary btn-disabled" disabled alt="loading"><i className="mdi mdi-loading mdi-spin mr-2"></i>Looading...</button>
+                                        <button type="button" className="btn btn-primary btn-disabled" disabled alt="loading"><i className="mdi mdi-loading mdi-spin mr-2"></i>Loading...</button>
                                     ) : (
                                          <button type="submit" className="btn btn-primary"><i className="mdi mdi-check mr-2"></i>Submit</button>
                                     ) : (
