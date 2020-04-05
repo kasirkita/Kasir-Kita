@@ -8,8 +8,8 @@ import ErrorDevice from './views/Errors/ErrorDevice'
 
 class App extends Component {
   render() {
-    const a = true
-    if (a) 
+    
+    if (isMobile) 
       return (
         <ErrorDevice />
       )
