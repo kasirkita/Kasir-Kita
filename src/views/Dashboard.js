@@ -1,30 +1,150 @@
 import React, { Component, Fragment } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Redirect } from 'react-router-dom'
+import Axios from 'axios'
+import { url } from '../global'
 
-const data = {
-    labels: ['07:00', '08:00', '11:00', '14:00', '15:00', '16:00', '17:00'],
-    datasets: [{
-        label: 'Penjualan',
-        backgroundColor: 'rgb(255, 99, 132)',
-        borderColor: 'rgb(255, 99, 132)',
-        data: [0, 10, 5, 2, 20, 30, 45],
-        fill: false
-    }, {
-
-        label: 'Pembelian',
-        backgroundColor: 'rgb(0, 123, 255)',
-        borderColor: 'rgb(0, 123, 255)',
-        data: [0, 0, 2, 6, 0, 3, 1],
-        fill: false
-    
-    }]
-}
 
 class Dashboard extends Component {
+
+    state = {
+        sales: '',
+        purchase: '',
+        income: '',
+        profit: '',
+        bestSeller: [],
+        almostOut: [],
+        labels: [],
+        dataPurchase: [],
+        dataSales: []
+
+    }
+
+    getSummary = () => {
+
+        Axios.get(`${url}/dashboard`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+            const {sales, income, purchase, profit} = res.data
+            
+            this.setState({
+                ...this.state,
+                sales,
+                income,
+                purchase,
+                profit
+            })
+
+        }).catch(err => {
+            console.log(err.response.data)
+        })
+
+    }
+
+    getBestSeller = () => {
+
+        Axios.get(`${url}/dashboard/best-seller`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+            const data = res.data.data
+            
+            this.setState({
+                ...this.state,
+                bestSeller: data
+            })
+
+        }).catch(err => {
+            console.log(err.response.data)
+        })
+    }
+
+
+    getAlmostOut = () => {
+
+        Axios.get(`${url}/dashboard/almost-out`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+            const data = res.data.data
+            
+            this.setState({
+                ...this.state,
+                almostOut: data
+            })
+
+        }).catch(err => {
+            console.log(err.response.data)
+        })
+    }
+
+    getChart = () => {
+
+        Axios.get(`${url}/dashboard/chart`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+            const data = res.data
+            
+            this.setState({
+                ...this.state,
+                labels: data.labels,
+                dataPurchase: data.data_purchase,
+                dataSales: data.data_sales,
+            })
+
+        }).catch(err => {
+            console.log(err.response.data)
+        })
+    }
+
+    componentDidMount = () => {
+        this.getSummary()
+        this.getBestSeller()
+        this.getAlmostOut()
+        this.getChart()
+    }
+
     render() {
         if (!sessionStorage.getItem('token'))
             return <Redirect to="/login" />
+        
+        const {
+            sales,
+            purchase,
+            income,
+            profit,
+            bestSeller,
+            almostOut,
+            labels,
+            dataSales,
+            dataPurchase
+        } = this.state
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Penjualan',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: dataSales,
+                fill: false
+            }, {
+        
+                label: 'Pembelian',
+                backgroundColor: 'rgb(0, 123, 255)',
+                borderColor: 'rgb(0, 123, 255)',
+                data: dataPurchase,
+                fill: false
+            
+            }]
+        }
+
         return (
             <Fragment>
                 <div className="row p-3"> 
@@ -39,7 +159,7 @@ class Dashboard extends Component {
                             <div className="card-body">
                                 <h5 className="card-title">Penjualan</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Total Penjualan hari ini</h6>
-                                <h6 className="text-right">Rp. 500,000</h6>
+                                <h6 className="text-right">{sales}</h6>
                             </div>
                         </div>
                     </div>
@@ -49,7 +169,7 @@ class Dashboard extends Component {
                             <div className="card-body">
                                 <h5 className="card-title">Pembelian</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Total Pendapatan hari ini</h6>
-                                <h6 className="text-right">Rp. 200,000</h6>
+                                <h6 className="text-right">{purchase}</h6>
                             </div>
                         </div>
                     </div>
@@ -59,7 +179,7 @@ class Dashboard extends Component {
                             <div className="card-body">
                                 <h5 className="card-title">Total Pendapatan</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Total Pendapatan hari ini</h6>
-                                <h6 className="text-right">Rp. 300,000</h6>
+                                <h6 className="text-right">{income}</h6>
                             </div>
                         </div>
                     </div>
@@ -69,7 +189,7 @@ class Dashboard extends Component {
                             <div className="card-body">
                                 <h5 className="card-title">Keuntungan</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Total keuntungan hari ini</h6>
-                                <h6 className="text-right">Rp. 50,000</h6>
+                                <h6 className="text-right">{profit}</h6>
                             </div>
                         </div>
                     </div>
@@ -85,31 +205,17 @@ class Dashboard extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>x10</td>
-                                </tr>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>x10</td>
-                                </tr>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>x10</td>
-                                </tr>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>x10</td>
-                                </tr>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>x10</td>
-                                </tr>
+                                {
+                                    bestSeller && bestSeller.map(best => {
+                                        return (
+                                            <tr key={best._id}>
+                                                <td>{best.product_name}</td>
+                                                <td>{best.price}</td>
+                                                <td>x{best.qty}</td>
+                                            </tr>
+                                        )
+                                    })
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -121,35 +227,21 @@ class Dashboard extends Component {
                                 <tr>
                                     <th>Nama</th>
                                     <th>Harga Jual</th>
-                                    <th>Qty</th>
+                                    <th>Tersisa</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>10</td>
-                                </tr>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>10</td>
-                                </tr>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>10</td>
-                                </tr>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>10</td>
-                                </tr>
-                                <tr>
-                                    <td>Barang ABC</td>
-                                    <td>Rp. 1,200</td>
-                                    <td>10</td>
-                                </tr>
+                                {
+                                    almostOut && almostOut.map(out => {
+                                        return (
+                                            <tr key={out._id}>
+                                                <td>{out.name}</td>
+                                                <td>{out.price_formatted}</td>
+                                                <td>{out.qty && out.qty.amount} {out.unit && out.unit.name}</td>
+                                            </tr>
+                                        )
+                                    })
+                                }
                             </tbody>
                         </table>
                     </div>

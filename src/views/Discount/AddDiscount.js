@@ -288,6 +288,7 @@ const getProductList = (inputValue, callback) => {
      Axios.get(`${url}/product/list`, {
          params: {
              keyword: inputValue,
+             discount: true
          }, 
          headers: {
              Authorization: `Bearer ${sessionStorage.getItem('token')}`

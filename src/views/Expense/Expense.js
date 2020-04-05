@@ -166,7 +166,7 @@ class Expense extends Component {
     }
 
     handleDelete = () => {
-        this.props.deleteUser(this.state.deletedId)
+        this.props.deleteExpense(this.state.deletedId)
     }
 
     handleClickPage = (page) => {
