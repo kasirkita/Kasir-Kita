@@ -4,10 +4,10 @@ Kasir Kita, aplikasi POS gratis dibuat menggunakan Reactjs
 ## Cara menginstall
 
 ### Step 1 Menginstall Package dan Mengatur URL
-Silahkan clone repository ini, atau download, setelah itu gunakan perintah `yarn install` atau `npm install`. Setelah itu silahkan buka file `global.js` yang ada pada directory `./src/global.js` lalu ubah url ke url aplikasi backend, untuk backend nya ada di repository ini `http://github.com/kasirkita/Kasir-Kita-BE` setelah itu gunakan perintah `yarn start` atau `npm start` untuk menyalakan servis dalam model development
+Silahkan clone repository ini, atau download, setelah itu gunakan perintah `yarn install` atau `npm install`. Setelah itu silahkan buka file `global.js` yang ada pada directory `./src/global.js` lalu ubah url ke url aplikasi backend, untuk backend nya ada di repository ini `https://github.com/kasirkita/Kasir-Kita-BE` setelah itu gunakan perintah `yarn start` atau `npm start` untuk menyalakan servis dalam model development
 
 ### Step 2 Mengatur Node.js untuk servis printer
-Silahkan buka kembali file `global.js` yang ada pada directory `./src/global.js` lalu ubah url nya sesuai dengan url yang kalian punya, untuk mendownload servis node.js printer ada di repository `http://github.com/kasirkita/Kasir-Kita-Nodejs`
+Silahkan buka kembali file `global.js` yang ada pada directory `./src/global.js` lalu ubah url nya sesuai dengan url yang kalian punya, untuk mendownload servis node.js printer ada di repository `https://github.com/kasirkita/Kasir-Kita-Printer`
 
 ### Step 3 Build aplikasi
 Silahkan ketikan perinta `yarn build` atau `npm build` lalu akan otomatis hasil build ada di folder `./build` silahkan untuk melokasikan folder ke http servis yang kalian miliki
