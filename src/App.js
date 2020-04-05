@@ -3,9 +3,16 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import routes from './routes'
 import './assets/style.css'
 import Error404 from './views/Errors/Error404'
+import { isMobile } from 'react-device-detect'
+import ErrorDevice from './views/Errors/ErrorDevice'
 
 class App extends Component {
   render() {
+    const a = true
+    if (a) 
+      return (
+        <ErrorDevice />
+      )
     return (
       <BrowserRouter>
         <Switch>
