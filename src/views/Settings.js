@@ -79,12 +79,12 @@ class Settings extends Component {
                     if (setting) {
                         
                         this.setState({
-                            name: setting.name,
-                            address: setting.address,
+                            name: setting.name ? setting.name : '',
+                            address: setting.address ? setting.address : '',
                             logo_remove: setting.logo_remove === 'true' ? true : false,
-                            logo_url: setting.logo_url,
-                            phone_number: setting.phone_number,
-                            divider: setting.divider,
+                            logo_url: setting.logo_url ? setting.logo_url : '',
+                            phone_number: setting.phone_number ? setting.phone_number : '',
+                            divider: setting.divider ? setting.divider : '',
                             currency: setting.currency ? setting.currency : '',
                             thousand_separator: setting.thousand_separator ? setting.thousand_separator : '',
                             decimal_separator: setting.decimal_separator ? setting.decimal_separator : '',
@@ -364,7 +364,7 @@ class Settings extends Component {
                                                 }
                                             </p>
                                             <p className="text-center m-0">
-                                            {address.split('\n').map((item, key) => {
+                                            { address && address.split('\n').map((item, key) => {
                                                 return <Fragment key={key}>{item}<br/></Fragment>
                                             })}
                                             </p>
