@@ -367,7 +367,7 @@ class Sales extends Component {
                                                 <td>{sales.number}</td>
                                                 <td>{sales.customer && sales.customer.name}</td>
                                                 <td className="text-right">{sales.total_formatted}</td>
-                                                <td>{sales.status === 'done' ? <span className="badge badge-info">Selesai</span> : <span className="badge badge-info">Ditahan</span>}</td>
+                                                <td>{sales.status === 'done' ? <span className="badge badge-info">Selesai</span> : <span className="badge badge-warning">Ditahan</span>}</td>
                                                 <td>{sales.payment_type === 'cash' ? 'Tunai' : 'Kartu'}</td>
                                                 <td>
                                                     <button onClick={() => this.handleDeleteModal(sales._id)} className="btn p-0 text-danger btn-link btn-sm mr-3">Hapus</button>
