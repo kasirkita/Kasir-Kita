@@ -41,6 +41,7 @@ const settingReducer = (state = initState, action) => {
             return {
                 ...state,
                 fetching: true,
+                error: null
             }
         case 'GET_SETTING_SUCCESS':
 
