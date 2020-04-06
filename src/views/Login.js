@@ -9,8 +9,8 @@ class Login extends Component {
 
     state = {
         agree: false,
-        email: '',
-        password: ''
+        email: 'aplikasikasirkita@gmail.com',
+        password: 'secret'
     }
 
     componentDidMount = () => {
