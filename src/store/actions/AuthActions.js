@@ -41,7 +41,7 @@ const checkUser = () => {
 }
 
 const register = (data) => {
-    return (dispatch, getState) => {
+    return async  (dispatch, getState) => {
         
         const {
             name,
@@ -54,7 +54,7 @@ const register = (data) => {
             type: 'REGISTER_PENDING'
         })
 
-        Axios.post(`${url}/register`, {
+        await Axios.post(`${url}/register`, {
 
             name,
             email,
