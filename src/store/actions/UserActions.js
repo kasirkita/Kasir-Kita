@@ -88,7 +88,7 @@ const saveUser = (data) => {
         const fd = new FormData();
 
         fd.append('photo', photo)
-        fd.set('date_of_birth', moment(date_of_birth).format('YYYY-MM-DD'))
+        fd.set('date_of_birth', date_of_birth ? moment(date_of_birth).format('YYYY-MM-DD') : null)
         fd.set('name', name)
         fd.set('email', email)
         fd.set('phone_number', phone_number)
