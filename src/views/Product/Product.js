@@ -350,8 +350,8 @@ class Product extends Component {
 
     handlePrintLabel = (data) => {
         const { toastManager } = this.props
-        const printer = sessionStorage.getItem('printer')
-        Axios.post(`${printer}/label`, {
+        // const printer = sessionStorage.getItem('printer')
+        Axios.post(`http://localhost:3002/label`, {
             data
         }).then(res => {
 

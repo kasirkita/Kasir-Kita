@@ -151,7 +151,7 @@ class Settings extends Component {
     handleTesReceipt = () => {
 
         const { toastManager } = this.props
-        const printer = sessionStorage.getItem('printer') ? sessionStorage.getItem('printer') : 'http://localhost:4000'
+        // const printer = sessionStorage.getItem('printer') ? sessionStorage.getItem('printer') : 'http://localhost:4000'
 
         const  {
             name,
@@ -169,7 +169,7 @@ class Settings extends Component {
             loadingTestReceipt: true
         })
 
-        Axios.post(`${printer}/preview`, {
+        Axios.post(`http://localhost:3002/preview`, {
             name,
             address,
             logo: logo_url,

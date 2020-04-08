@@ -124,8 +124,8 @@ class Discount extends Component {
 
     handlePrintLabel = (data) => {
         const { toastManager } = this.props
-        const printer = sessionStorage.getItem('printer')
-        Axios.post(`${printer}/label-discount`, {
+        // const printer = sessionStorage.getItem('printer')
+        Axios.post(`http://localhost:3002/label-discount`, {
             data
         }).then(res => {
 

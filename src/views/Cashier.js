@@ -371,7 +371,7 @@ class Cashier extends Component {
 
         const { toastManager } = this.props
         let data = res
-        const printer = sessionStorage.getItem('printer') ? sessionStorage.getItem('printer') : 'http://localhost:4000'
+        // const printer = sessionStorage.getItem('printer') ? sessionStorage.getItem('printer') : 'http://localhost:4000'
         data = {
             ...data,
             logo: sessionStorage.getItem('logo'),
@@ -384,7 +384,7 @@ class Cashier extends Component {
             phone_number: sessionStorage.getItem('phone_number')
         }
 
-        Axios.post(`${printer}/receipt`, data).then(res => {
+        Axios.post(`http://localhost:3002/receipt`, data).then(res => {
             if (this.props.match.params.id) {
                 this.props.history.push('/cashier')
             } else {
