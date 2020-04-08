@@ -437,19 +437,6 @@ class Settings extends Component {
                             <div className="tab-pane fade" id="other" role="tabpanel" aria-labelledby="nav-other">
                                 <div className="row">
                                     <div className="col-md-6">
-                                        <h2>Printer</h2>
-                                        <div className="form-group">
-                                            <label className="control-label">URL Printer</label>
-                                            <div className="input-group mb-3">
-                                                <input type="text" placeholder="http://..." value={printer} onChange={e => this.handleChange('printer', e.target.value)} className="form-control" />
-                                                <div className="input-group-append">
-                                                    <button onClick={this.handleTestPrinter} className="btn btn-outline-secondary" type="button">Tes Koneksi Printer</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-6">
                                         <h2>Pajak</h2>
                                         <div className="form-group">
                                             <label className="control-label">PPN</label>

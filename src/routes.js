@@ -44,13 +44,20 @@ import ViewSales from './views/Sales/ViewSales';
 import ViewPurchase from './views/Purchase/ViewPurchase';
 import ViewExpense from './views/Expense/ViewExpense';
 import EditExpense from './views/Expense/EditExpense';
+import SetUrl from './components/SetUrl';
 
 export default [
     {
         path: '/',
         exact: true,
         layout: FullScreen,
-        component: () => <Redirect to="/dashboard" />
+        component: () => {
+            if (!localStorage.getItem('url')) {
+                return <SetUrl />
+            } else {
+                return <Redirect to="/dashboard" />
+            }
+        }
     },
     {
         path: '/login',
