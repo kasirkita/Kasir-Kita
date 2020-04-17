@@ -41,7 +41,7 @@ class DefaultScreen extends Component {
                                         permission.children && permission.children.length > 0 ? (
                                             <li className={`dropdown ${ path === permission.slug || permission.children.map(child => child.slug).includes(path) ? 'dropdown-active' : ''}`} key={permission._id}>
                                                 <a href="/" className="nav-link dropdown-toggle pointer" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <i className="mdi mdi-calendar-text mr-2"></i> {permission.name} 
+                                                    <i className={`mdi mdi-${permission.icon} mr-2`}></i> {permission.name} 
                                                 </a>
 
                                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -56,7 +56,7 @@ class DefaultScreen extends Component {
                                             </li>
                                         ) : (
                                             <li className="nav-item" key={permission._id}>
-                                                <NavLink className="nav-link" to={`/${permission.slug}`}><i className={permission.icon}></i> {permission.name}</NavLink>
+                                                <NavLink className="nav-link" to={`/${permission.slug}`}><i className={`mdi mdi-${permission.icon} mr-2`}></i> {permission.name}</NavLink>
                                             </li>
                                         ) 
                                     )
