@@ -75,7 +75,8 @@ const saveProduct = (data) => {
             unit_label,
             category_id,
             category_label,
-            stock
+            stock,
+            multipleUnits
         } = data
         
         dispatch({
@@ -92,7 +93,8 @@ const saveProduct = (data) => {
                 unit_label,
                 category_id,
                 category_label,
-                stock
+                stock,
+                units: multipleUnits
             },
             {
                 headers: {

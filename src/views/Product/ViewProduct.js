@@ -43,10 +43,43 @@ class ViewProduct extends Component {
                                     <th>Kategori</th>
                                     <td>{ product && product.category && product.category.name }</td>
                                     <th>Stok</th>
-                                    <td>{ product && product.qty && product.qty.amount }/{ product && product.unit && product.unit.name }</td>
+                                    <td>{ product && product.qty && product.qty.amount } { product && product.unit && product.unit.name }</td>
                                 </tr>
                             </tbody>
                         </table>
+
+                        {
+                            product && product.units && (
+                                <Fragment>
+                                    <h5>Multi Satuan</h5>
+                                    <table className="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Satuan</th>
+                                                <th>Konversi</th>
+                                                <th>Harga Jual</th>
+                                                <th>Harga Grosir</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                product.units.map(unit => {
+                                                    return (
+                                                    <tr key={unit._id}>
+                                                        <td>{unit.unit_name}</td>
+                                                        <td>{unit.convertion}</td>
+                                                        <td className="text-right">{unit.price_formatted}</td>
+                                                        <td className="text-right">{unit.wholesale_formatted}</td>
+                                                    </tr>
+                                                    )
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                    
+                                </Fragment>
+                            )
+                        }
                     </div>
                 
                 </div>

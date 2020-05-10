@@ -8,6 +8,7 @@ import { withToastManager } from 'react-toast-notifications'
 import Axios from 'axios'
 import { url } from '../../global'
 import FormatNumber from '../../components/FormatNumber';
+import NumberFormat from 'react-number-format';
 
 class AddProduct extends Component {
 
@@ -21,7 +22,8 @@ class AddProduct extends Component {
         unit_label: '',
         category_id: '',
         category_label: '',
-        stock: ''
+        stock: '',
+        multipleUnits: []
     }
 
     handleSave = () => {
@@ -58,6 +60,74 @@ class AddProduct extends Component {
                 [`${name}_id`]: null
             })
         }
+    }
+
+    handleAddRow = () => {
+
+        this.setState({
+            ...this.state,
+            multipleUnits: [
+                ...this.state.multipleUnits,
+                {
+                    _id: Math.random(),
+                    unit_id: '',
+                    unit_label: '',
+                    convertion: '',
+                    price: '',
+                    wholesale: ''
+                }
+            ]
+        })
+    }
+
+    handleChangeRowSelect = (value, _id, name) => {
+
+        let currentMultipleUnits = this.state.multipleUnits
+        const filter = currentMultipleUnits.find(multipleUnit => multipleUnit._id === _id)
+        const index = currentMultipleUnits.findIndex(multipleUnit => multipleUnit._id === _id)
+            
+        filter[`${name}_label`] = value !== null ? value.label : null
+        filter[`${name}_id`] = value !== null ? value.value : null
+
+        currentMultipleUnits[index] = filter
+
+        this.setState({
+            ...this.state,
+            multipleUnits: currentMultipleUnits
+        })
+
+    }
+
+    handleChangeRowNumber = (value, _id, name) => {
+
+        let currentMultipleUnits = this.state.multipleUnits
+        const filter = currentMultipleUnits.find(multipleUnit => multipleUnit._id === _id)
+        const index = currentMultipleUnits.findIndex(multipleUnit => multipleUnit._id === _id)
+
+        filter[name] = value.floatValue
+        
+        if (name === 'convertion') {
+            filter.price = value.floatValue * this.state.price
+            filter.wholesale = value.floatValue * this.state.wholesale
+        }
+        currentMultipleUnits[index] = filter
+
+
+        this.setState({
+            ...this.state,
+            multipleUnits: currentMultipleUnits
+        })
+    }
+
+    handleRemoveRow = (id) => {
+
+        const multipleUnits = this.state.multipleUnits
+        const newMultipleUnits = multipleUnits.filter(multipleUnit => multipleUnit._id !== id)
+
+        this.setState({
+            ...this.state,
+            multipleUnits: newMultipleUnits
+        })
     }
 
     componentDidUpdate = (prevProps) => {
@@ -104,6 +174,7 @@ class AddProduct extends Component {
             category_id,
             category_label,
             stock,
+            multipleUnits
         } = this.state
 
         const validate = error && error.data && error.data.errors
@@ -180,7 +251,7 @@ class AddProduct extends Component {
                             }
                         </div>
                         <div className="form-group">
-                            <label className="control-label">Satuan</label>
+                            <label className="control-label">Satuan Terkecil</label>
                             <AsyncCreateableSelect
                                 isClearable
                                 onChange={this.handleChangeSelect('unit')}
@@ -213,6 +284,59 @@ class AddProduct extends Component {
                             }
                         </div>
                     </div>
+                </div>
+                <div className="col-md-12 mt-2 mb-5">
+                    <h5>Multi Satuan</h5>
+                    <button className="btn btn-primary" onClick={this.handleAddRow}><i className="mdi mdi-plus mr-2"></i>Tambah baris</button>
+                    <table className="table table-hover mt-4">
+                        <thead>
+                            <tr>
+                                <th>Satuan</th>
+                                <th>Konversi</th>
+                                <th>Harga Jual</th>
+                                <th>Harga Grosir</th>
+                                <th style={{width: 50}}></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                multipleUnits && multipleUnits.length > 0 ? multipleUnits.map(multipleUnit => {
+                                    return (
+                                        <tr key={multipleUnit._id}>
+                                            <td style={{width: 300}}>
+                                                <AsyncCreateableSelect
+                                                    isClearable
+                                                    placeholder="Pilih atau ketik baru"
+                                                    loadOptions={getUnitList}
+                                                    cacheOptions
+                                                    defaultOptions
+                                                    onChange={(e) => this.handleChangeRowSelect(e, multipleUnit._id, 'unit')}
+                                                    value={ multipleUnit.unit_id && { label: multipleUnit.unit_label, value: multipleUnit.unit_id }}
+                                                />
+                                            </td>
+                                            <td>
+                                                <NumberFormat onValueChange={(e) => this.handleChangeRowNumber(e, multipleUnit._id, 'convertion')} value={multipleUnit.convertion} placeholder="Konversi ke satuan terkecil" className="form-control text-right" />
+                                            </td>
+                                            <td>
+                                                <FormatNumber handleChangeNumber={(e) => this.handleChangeRowNumber(e, multipleUnit._id, 'price')} value={multipleUnit.price} />
+                                            </td>
+                                            <td>
+                                                <FormatNumber handleChangeNumber={(e) => this.handleChangeRowNumber(e, multipleUnit._id, 'wholesale')} value={multipleUnit.wholesale} />
+                                            </td>
+                                            <td>
+                                                <button onClick={() => this.handleRemoveRow(multipleUnit._id)} className="btn btn-link text-danger btn-remove p-0 pl-2"><i className="mdi mdi-close"></i></button>
+                                            </td>
+                                        </tr>
+                                    )
+                                }) : (
+                                    <tr>
+                                        <td colSpan="5" className="text-center">Tidak ada data</td>
+                                    </tr>
+                                )
+                            }
+                            
+                        </tbody>
+                    </table>
                 </div>
                 <div className="col-md-12 mt-2 text-right mb-5">
                     <hr/>

@@ -242,38 +242,43 @@ class Cashier extends Component {
             return total + ( data.customer_type === 'wholesaler' ? cart.wholesale * cart.qty : cart.price *  cart.qty )
         }, 0)
 
-
         let tax = sessionStorage.getItem('tax')
         tax  = tax > 0 ? subtotal * (tax / 100) : 0
 
+
         const total_discount = data.carts.reduce((total, cart) => {
-        const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : cart.price * (cart.discount_amount / 100) : 0
-        let set_term
-        let discount
 
-        if (cart.term === '=') {
-            set_term = cart.qty >= cart.total_qty
-        } else {
-            set_term = cart.qty > cart.total_qty
-        }
+            const price = cart.customer_type === 'wholesaler' ? cart.wholesale : cart.price;
+            const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : price * (cart.discount_amount / 100) : 0
+            let set_term
+            let discount
+            let terms
 
-        if (set_term) {
-
-            if (cart.customer_type) {
-                if (cart.customer_type === data.customer_type) {
-                    discount = set_discount
-                } else {
-                    discount = 0
-                }
+            if (cart.term === '=') {
+                terms = cart.total_qty
+                set_term = cart.qty >= cart.total_qty
             } else {
-                discount = set_discount;
+                terms = cart.total_qty + 1
+                set_term = cart.qty > cart.total_qty
             }
 
-        } else {
-            discount = 0
-        }
+            if (set_term) {
 
-        return total + discount
+                if (cart.customer_type) {
+                    if (cart.customer_type === data.customer_type) {
+                        discount = set_discount * Math.floor(cart.qty / terms)
+                    } else {
+                        discount = 0
+                    }
+                } else {
+                    discount = set_discount * Math.floor(cart.qty / terms)
+                }
+
+            } else {
+                discount = 0
+            }
+
+            return total + discount
 
         }, 0)
 
@@ -446,13 +451,16 @@ class Cashier extends Component {
 
         const total_discount = carts.reduce((total, cart) => {
 
-            const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : cart.price * (cart.discount_amount / 100) : 0
+            const price = cart.customer_type === 'wholesaler' ? cart.wholesale : cart.price;
+            const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : price * (cart.discount_amount / 100) : 0
             let set_term
             let discount
-
+            let terms
             if (cart.term === '=') {
+                terms = cart.total_qty
                 set_term = cart.qty >= cart.total_qty
             } else {
+                terms = cart.total_qty + 1
                 set_term = cart.qty > cart.total_qty
             }
 
@@ -460,17 +468,19 @@ class Cashier extends Component {
 
                 if (cart.customer_type) {
                     if (cart.customer_type === customer_type) {
-                        discount = set_discount
+                        discount = set_discount * Math.floor(cart.qty / terms)
                     } else {
                         discount = 0
                     }
                 } else {
-                    discount = set_discount;
+                    discount = set_discount * Math.floor(cart.qty / terms)
                 }
 
             } else {
                 discount = 0
             }
+
+            console.log(discount)
 
             return total + discount
 
@@ -661,13 +671,17 @@ class Cashier extends Component {
                             {
                                     carts ? carts.map(cart => { 
 
-                                        const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : cart.price * (cart.discount_amount / 100) : 0
+                                        const price = cart.customer_type === 'wholesaler' ? cart.wholesale : cart.price;
+                                        const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : price * (cart.discount_amount / 100) : 0
                                         let set_term
                                         let discount
+                                        let terms
 
                                         if (cart.term === '=') {
+                                            terms = cart.total_qty
                                             set_term = cart.qty >= cart.total_qty
                                         } else {
+                                            terms = cart.total_qty + 1
                                             set_term = cart.qty > cart.total_qty
                                         }
 
@@ -675,12 +689,12 @@ class Cashier extends Component {
 
                                             if (cart.customer_type) {
                                                 if (cart.customer_type === customer_type) {
-                                                    discount = set_discount
+                                                    discount = set_discount * (Math.floor(cart.qty / terms))
                                                 } else {
                                                     discount = 0
                                                 }
                                             } else {
-                                                discount = set_discount;
+                                                discount = set_discount * (Math.floor(cart.qty / terms))
                                             }
 
                                         } else {
