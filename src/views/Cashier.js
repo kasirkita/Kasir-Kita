@@ -20,7 +20,7 @@ class Cashier extends Component {
         customer_type: null,
         products: [],
         keyword: '',
-        cash: '',
+        cash: 0,
         payment: 'cash',
         withPrint: false,
         units: []
@@ -56,9 +56,18 @@ class Cashier extends Component {
     }
 
     handleChange = (name) => (e) => {
+
+        let value
+        if (name === 'cash') {
+            const cash = this.state.cash 
+            value = cash ? parseInt(cash) + parseInt(e.target.value) : parseInt(e.target.value)
+        } else {
+            value = e.target.value
+        }
+
         this.setState({
             ...this.state,
-            [name]: e.target.value
+            [name]: value
         })
     }
 
