@@ -80,6 +80,7 @@ const saveSales = (data) => {
             cash,
             change,
             carts,
+            units,
             tax,
             total_discount,
             total,
@@ -103,7 +104,8 @@ const saveSales = (data) => {
                 total_discount,
                 status,
                 total,
-                details: carts
+                details: carts,
+                units
             },
             {
                 headers: {

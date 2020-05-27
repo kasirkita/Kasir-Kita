@@ -22,7 +22,8 @@ class Cashier extends Component {
         keyword: '',
         cash: '',
         payment: 'cash',
-        withPrint: false
+        withPrint: false,
+        units: []
     }
 
     handlePayModal = () => {
@@ -216,6 +217,56 @@ class Cashier extends Component {
 
     }
 
+    handleUpdateUnit = (value, id) => {
+
+        const cart = this.state.carts.find(cart => cart._id === id)
+        const currentUnit = cart.units.find(unit => unit.unit_id === value)
+        let units = this.state.units
+        const findUnitByCartId = units.find(unit => unit.cart_id === id)
+
+        if (findUnitByCartId) {
+            
+            const index = units.findIndex(unit => unit.cart_id === id)
+            
+            if (currentUnit) {
+                findUnitByCartId.convertion = currentUnit.convertion
+                findUnitByCartId.unit_id = currentUnit.unit_id
+                findUnitByCartId.unit_name = currentUnit.unit_name
+                findUnitByCartId.price = currentUnit.price
+                findUnitByCartId.wholesale = currentUnit.wholesale
+            } else {
+                findUnitByCartId.convertion = 1
+                findUnitByCartId.unit_id = cart.unit_id
+                findUnitByCartId.unit_name = cart.unit_name
+                findUnitByCartId.price = cart.price
+                findUnitByCartId.wholesale = cart.wholesale
+            }
+
+            units[index] = findUnitByCartId
+
+            this.setState({
+                ...this.state,
+                units
+            })
+
+        } else {
+
+            this.setState({
+                ...this.state,
+                units: [
+                    ...this.state.units,
+                    {
+                        ...currentUnit,
+                        cart_id: id
+                    }
+                ]
+            })
+
+        }
+
+        
+    }
+
     handleDeleteCart = (id) => {
 
         const carts = this.state.carts
@@ -238,8 +289,14 @@ class Cashier extends Component {
     handlePay = (withPrint, status = 'done') => {
 
         let data = this.state
+        const customer_type = this.state.customer_type
         const subtotal = data.carts.reduce((total, cart) => {
-            return total + ( data.customer_type === 'wholesaler' ? cart.wholesale * cart.qty : cart.price *  cart.qty )
+
+            const unitPrice = this.state.units.find(unit => unit.cart_id === cart._id)
+            const fixPrice = customer_type === 'wholesaler' ? cart.wholesale : cart.price
+            const price = unitPrice ? customer_type === 'wholesaler' ? unitPrice.wholesale : unitPrice.price : fixPrice
+
+            return total + ( price *  cart.qty )
         }, 0)
 
         let tax = sessionStorage.getItem('tax')
@@ -248,7 +305,10 @@ class Cashier extends Component {
 
         const total_discount = data.carts.reduce((total, cart) => {
 
-            const price = cart.customer_type === 'wholesaler' ? cart.wholesale : cart.price;
+            const unitPrice = this.state.units.find(unit => unit.cart_id === cart._id)
+            const fixPrice = customer_type === 'wholesaler' ? cart.wholesale : cart.price
+            const price = unitPrice ? customer_type === 'wholesaler' ? unitPrice.wholesale : unitPrice.price : fixPrice
+
             const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : price * (cart.discount_amount / 100) : 0
             let set_term
             let discount
@@ -264,8 +324,8 @@ class Cashier extends Component {
 
             if (set_term) {
 
-                if (cart.customer_type) {
-                    if (cart.customer_type === data.customer_type) {
+                if (customer_type) {
+                    if (customer_type === data.customer_type) {
                         discount = set_discount * Math.floor(cart.qty / terms)
                     } else {
                         discount = 0
@@ -327,7 +387,8 @@ class Cashier extends Component {
                     carts: details ? details.map(detail => {
                         return {
                             ...detail.product,
-                            qty: detail.qty
+                            qty: detail.qty,
+                            units: detail.units
                         }
                     }) : []
                 })
@@ -441,17 +502,27 @@ class Cashier extends Component {
 
     render() {
 
-        const { payModal, carts, code, customer_id, customer_name, products, keyword, customer_type, cash, payment } = this.state
+        const { payModal, carts, code, customer_id, customer_name, products, keyword, customer_type, cash, payment, units } = this.state
         const { fetching } = this.props
         const total = carts.reduce((total, cart) => {
-            return total + ( customer_type === 'wholesaler' ? cart.wholesale * cart.qty : cart.price *  cart.qty )
+            
+            const unitPrice = units.find(unit => unit.cart_id === cart._id)
+            const fixPrice = customer_type === 'wholesaler' ? cart.wholesale : cart.price
+            const price = unitPrice ? customer_type === 'wholesaler' ? unitPrice.wholesale : unitPrice.price : fixPrice
+
+            return total + ( price * cart.qty )
+
         }, 0)
         let tax = parseInt(sessionStorage.getItem('tax'))
         tax = tax > 0 ? total * (tax / 100) : 0
 
         const total_discount = carts.reduce((total, cart) => {
 
-            const price = cart.customer_type === 'wholesaler' ? cart.wholesale : cart.price;
+            const unitPrice = units.find(unit => unit.cart_id === cart._id)
+            const fixPrice = customer_type === 'wholesaler' ? cart.wholesale : cart.price
+            const price = unitPrice ? customer_type === 'wholesaler' ? unitPrice.wholesale : unitPrice.price : fixPrice
+
+
             const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : price * (cart.discount_amount / 100) : 0
             let set_term
             let discount
@@ -466,8 +537,8 @@ class Cashier extends Component {
 
             if (set_term) {
 
-                if (cart.customer_type) {
-                    if (cart.customer_type === customer_type) {
+                if (customer_type) {
+                    if (customer_type === customer_type) {
                         discount = set_discount * Math.floor(cart.qty / terms)
                     } else {
                         discount = 0
@@ -479,8 +550,6 @@ class Cashier extends Component {
             } else {
                 discount = 0
             }
-
-            console.log(discount)
 
             return total + discount
 
@@ -583,7 +652,7 @@ class Cashier extends Component {
                                                     <div className="btn-group mb-2" role="group" aria-label="Basic example">
                                                         <button type="button" value={50000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 50{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
                                                         <button type="button" value={70000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 70{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
-                                                        <button type="button" value={10000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 100{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
+                                                        <button type="button" value={100000} onClick={this.handleChange('cash')} className="btn btn-info">{ sessionStorage.getItem('currency') !== 'null' ? sessionStorage.getItem('currency') : '' } 100{sessionStorage.getItem('thousand_separator') !== 'null' ? sessionStorage.getItem('thousand_separator') : ''}000</button>
                                                     </div>
                                                 </div>
                                                 <FormatNumber value={cash} handleChangeNumber={this.handleChangeNumber('cash')} className="form-control text-right" placeholder="Rp. 0"/>
@@ -663,6 +732,7 @@ class Cashier extends Component {
                                     <th>Nama</th>
                                     <th className="text-right">Harga Jual</th>
                                     <th className="text-center">Qty</th>
+                                    <th className="text-center">Satuan</th>
                                     <th className="text-center">Diskon</th>
                                     <th className="text-right">Subtotal</th>
                                 </tr>
@@ -671,7 +741,10 @@ class Cashier extends Component {
                             {
                                     carts ? carts.map(cart => { 
 
-                                        const price = cart.customer_type === 'wholesaler' ? cart.wholesale : cart.price;
+                                        const unitPrice = units.find(unit => unit.cart_id === cart._id)
+                                        const fixPrice = customer_type === 'wholesaler' ? cart.wholesale : cart.price
+                                        const price = unitPrice ? customer_type === 'wholesaler' ? unitPrice.wholesale : unitPrice.price : fixPrice
+
                                         const set_discount = cart.discount_amount ? cart.type === 'fix' ? cart.discount_amount : price * (cart.discount_amount / 100) : 0
                                         let set_term
                                         let discount
@@ -687,8 +760,8 @@ class Cashier extends Component {
 
                                         if (set_term) {
 
-                                            if (cart.customer_type) {
-                                                if (cart.customer_type === customer_type) {
+                                            if (customer_type) {
+                                                if (customer_type === customer_type) {
                                                     discount = set_discount * (Math.floor(cart.qty / terms))
                                                 } else {
                                                     discount = 0
@@ -701,13 +774,23 @@ class Cashier extends Component {
                                             discount = 0
                                         }
 
-                                        const subtotal = customer_type === 'wholesaler' ? (cart.wholesale * cart.qty) - discount : (cart.price *  cart.qty) - discount
+                                        const subtotal = (price * cart.qty) - discount
 
                                         return (
                                             <tr key={cart._id}>
                                                 <td style={{width: '195px'}}>{cart.name}</td>
-                                                <td style={{width: '195px'}} className="text-right">{ customer_type === 'wholesaler' ? cart.wholesale_formatted : cart.price_formatted}</td>
+                                                <td style={{width: '195px'}} className="text-right"><FormatNumber value={price} type="text" /></td>
                                                 <td style={{width: '195px'}} className="text-center" width="120"><input style={{width: '50%', margin: 'auto'}} type="number" value={cart.qty} min="1" onChange={(e) => this.handleUpdateQty(e.target.value, cart._id) } className="form-control text-right" /></td>
+                                                <td style={{width: '195px'}} className="text-center">
+                                                    <select onChange={(e) => this.handleUpdateUnit(e.target.value, cart._id)}>
+                                                        <option value="0">{cart.unit}</option>
+                                                        {
+                                                            cart.units && cart.units.map(unit => {
+                                                                return <option key={unit.unit_id} value={unit.unit_id}>{unit.unit_name}</option>
+                                                            })
+                                                        }
+                                                    </select>
+                                                </td>
                                                 <td style={{width: '195px'}} className="text-right"><FormatNumber value={discount} type="text" /></td>
                                                 <td style={{width: '195px'}} className="text-right">
                                                     <div style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
