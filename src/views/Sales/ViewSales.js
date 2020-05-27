@@ -68,7 +68,7 @@ class ViewSales extends Component {
                                                     <tr key={detail._id}>
                                                         <td>{detail.product_name}</td>
                                                         <td className="text-right">{detail.price_formatted}</td>
-                                                        <td className="text-center">{detail.qty}</td>
+                                                        <td className="text-center">{detail.qty} {detail.unit_name}</td>
                                                         <td className="text-right">-{detail.discount_formatted}</td>
                                                         <td className="text-right">{detail.subtotal_formatted}</td>
                                                     </tr>
