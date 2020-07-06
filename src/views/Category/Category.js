@@ -36,7 +36,7 @@ function Category (props) {
 
     useEffect(() => {
         fetchCategory()
-    }, [state.page, state.perpage, state.ordering])
+    }, [state.page, state.perpage, state.ordering, state.filter])
 
     const handleChange = (name) => (e) => {
         setState({
@@ -71,7 +71,30 @@ function Category (props) {
     }
 
     const handleDelete = () => {
-        deleteCategory(state.deletedId)
+        setLoading(true)
+        Axios.delete(`${url}/category/${state.deletedId}`, {
+            headers: {
+                Authorizaion: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
+
+            toastManager.add(res.data.message, {
+                appearance: 'success',
+                autoDismiss: true
+            })
+
+            handleReset()
+            fetchCategory()
+
+        }).catch(err => {
+            if (err.response) {
+                if (err.response.status === 422) {
+                    setValidate(err.respose)
+                }
+            }
+        }).finally(() => {
+            setLoading(false)
+        })
     }
 
     const handleCloseDeleteModal = () => {
@@ -116,18 +139,29 @@ function Category (props) {
     }
 
     const handleActive = (e) => {
-        const value = e.target.value
-        toggleCategory(value)
-        
-    }
 
-    const handleUpdate = (id) => {
+        setLoading(true)
+        Axios.post(`${url}/category/toggle/${e.target.value}`,{
+            is_active: e.target.checked
+        }, {
+            headers: {
+                Authorizaion: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
 
-        getCategory(id)
-        setState({
-            ...state,
-            title: 'Ubah kategori',
-            createModal: true
+            toastManager.add(res.data.message, {
+                appearance: 'success',
+                autoDismiss: true
+            })
+
+        }).catch(err => {
+            if (err.response) {
+                if (err.response.status === 422) {
+                    setValidate(err.respose)
+                }
+            }
+        }).finally(() => {
+            setLoading(false)
         })
 
     }
@@ -135,8 +169,8 @@ function Category (props) {
     const handleSubmit = () => {
 
         let apiUrl
-        if (state.deletedId) {
-            apiUrl = `${url}/category/${state.deletedId}`
+        if (state.updatedId) {
+            apiUrl = `${url}/category/${state.updatedId}`
         } else {
             apiUrl = `${url}/category`
         }
@@ -177,6 +211,7 @@ function Category (props) {
                 perpage: state.perpage,
                 ordering: state.ordering,
                 keyword: state.keyword,
+                filter: state.filter
             },
             headers: {
                 Authorizaion: `Bearer ${sessionStorage.getItem('token')}`
@@ -195,16 +230,33 @@ function Category (props) {
         })
     }
 
-    const deleteCategory = () => {
+    const getCategory = (id) => {
+        setLoading(true)
+        Axios.get(`${url}/category/${id}`, {
+            headers: {
+                Authorizaion: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }).then(res => {
 
-    }
+            const data = res.data.data
 
-    const toggleCategory = () => {
+            setState({
+                ...state,
+                updatedId: data._id,
+                name: data.name,
+                createModal: true,
+                title: 'Ubah kategori'
+            })
 
-    }
-
-    const getCategory = () => {
-
+        }).catch(err => {
+            if (err.response) {
+                if (err.response.status === 422) {
+                    setValidate(err.respose)
+                }
+            }
+        }).finally(() => {
+            setLoading(false)
+        })
     }
 
     const handleReset = () => {
@@ -249,7 +301,7 @@ function Category (props) {
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={handleCloseDeleteModal}><i className="mdi mdi-close mr-2"></i>Tutup</button>
-                        <button type="button" className="btn btn-primary" onClick={handleDelete}><i className="mdi mdi-alert mr-2"></i>Hapus data</button>
+                        <button type="button" className={`btn btn-primary ${loading ? 'btn-disabled' : ''}`} disabled={loading} onClick={handleDelete}><i className="mdi mdi-alert mr-2"></i>Hapus data</button>
                     </div>
                 </Modal>
 
@@ -323,10 +375,10 @@ function Category (props) {
                                 return (
                                     <tr key={category._id}>
                                         <td>{ category.name }</td>
-                                        <td className="text-center"><input type="checkbox" value={category._id} onClick={handleActive} defaultChecked={category.deleted_at ? false : true } /></td>
+                                        <td className="text-center"><input type="checkbox" value={category._id} onClick={handleActive} defaultChecked={category.isActive} /></td>
                                         <td>
                                             <button onClick={() => handleDeleteModal(category._id)} className="btn p-0 text-danger btn-link btn-small mr-3">Hapus</button>
-                                            <button onClick={() => handleUpdate(category._id)} className="btn p-0 text-success btn-link btn-small">Ubah</button>
+                                            <button onClick={() => getCategory(category._id)} className="btn p-0 text-success btn-link btn-small">Ubah</button>
                                         </td>
                                     </tr>
                                 )
