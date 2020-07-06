@@ -1,26 +1,38 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component, Fragment, useState, useEffect } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Redirect } from 'react-router-dom'
 import Axios from 'axios'
 import { url } from '../global'
+import { withToastManager } from 'react-toast-notifications'
 
 
-class Dashboard extends Component {
+function Dashboard(props) {
 
-    state = {
+    const { toastManager } = props
+
+    const [data, setData] = useState({
         sales: '',
         purchase: '',
         income: '',
-        profit: '',
-        bestSeller: [],
-        almostOut: [],
-        labels: [],
-        dataPurchase: [],
-        dataSales: []
+        profit: ''
+    })
 
-    }
+    const [bestSeller, setBestSeller] = useState([])
+    const [almostOut, setAlmostOut] = useState([])
+    const [labels, setLabels] = useState([])
+    const [dataPurchase, setDataPurchase] = useState([])
+    const [dataSales, setDataSales] = useState([])
 
-    getSummary = () => {
+    useEffect(() => {
+        if (sessionStorage.getItem('token')) {
+            getChart()
+            getAlmostOut()
+            getBestSeller()
+            getSummary()
+        }
+    }, [])
+
+    const getSummary = () => {
 
         Axios.get(`${url}/dashboard`, {
             headers: {
@@ -29,8 +41,8 @@ class Dashboard extends Component {
         }).then(res => {
             const {sales, income, purchase, profit} = res.data
             
-            this.setState({
-                ...this.state,
+            setData({
+                ...data,
                 sales,
                 income,
                 purchase,
@@ -38,12 +50,17 @@ class Dashboard extends Component {
             })
 
         }).catch(err => {
-            console.log(err.response.data)
+            if (err.response) {
+                toastManager.add(err.response.data.message, {
+                    appearance: 'error',
+                    autoDismiss: true
+                })
+            }
         })
 
     }
 
-    getBestSeller = () => {
+    const getBestSeller = () => {
 
         Axios.get(`${url}/dashboard/best-seller`, {
             headers: {
@@ -52,18 +69,20 @@ class Dashboard extends Component {
         }).then(res => {
             const data = res.data.data
             
-            this.setState({
-                ...this.state,
-                bestSeller: data
-            })
+            setBestSeller(data)
 
         }).catch(err => {
-            console.log(err.response.data)
+            if (err.response) {
+                toastManager.add(err.response.data.message, {
+                    appearance: 'error',
+                    autoDismiss: true
+                })
+            }
         })
     }
 
 
-    getAlmostOut = () => {
+    const getAlmostOut = () => {
 
         Axios.get(`${url}/dashboard/almost-out`, {
             headers: {
@@ -72,17 +91,19 @@ class Dashboard extends Component {
         }).then(res => {
             const data = res.data.data
             
-            this.setState({
-                ...this.state,
-                almostOut: data
-            })
+            setAlmostOut(data)
 
         }).catch(err => {
-            console.log(err.response.data)
+            if (err.response) {
+                toastManager.add(err.response.data.message, {
+                    appearance: 'error',
+                    autoDismiss: true
+                })
+            }
         })
     }
 
-    getChart = () => {
+    const getChart = () => {
 
         Axios.get(`${url}/dashboard/chart`, {
             headers: {
@@ -91,40 +112,23 @@ class Dashboard extends Component {
         }).then(res => {
             const data = res.data
             
-            this.setState({
-                ...this.state,
-                labels: data.labels,
-                dataPurchase: data.data_purchase,
-                dataSales: data.data_sales,
-            })
-
+            setLabels(data.labels)
+            setDataPurchase(data.data_purchase)
+            setDataSales(data.data_sales)
+            
         }).catch(err => {
-            console.log(err.response.data)
+            if (err.response) {
+                toastManager.add(err.response.data.message, {
+                    appearance: 'error',
+                    autoDismiss: true
+                })
+            }
         })
     }
 
-    componentDidMount = () => {
-        this.getSummary()
-        this.getBestSeller()
-        this.getAlmostOut()
-        this.getChart()
-    }
-
-    render() {
-        if (!sessionStorage.getItem('token'))
-            return <Redirect to="/login" />
-        
-        const {
-            sales,
-            purchase,
-            income,
-            profit,
-            bestSeller,
-            almostOut,
-            labels,
-            dataSales,
-            dataPurchase
-        } = this.state
+    if (!sessionStorage.getItem('token')) {
+        return <Redirect to="/login" />
+    } else {
 
         const data = {
             labels: labels,
@@ -159,7 +163,7 @@ class Dashboard extends Component {
                             <div className="card-body">
                                 <h5 className="card-title">Penjualan</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Total Penjualan hari ini</h6>
-                                <h6 className="text-right">{sales}</h6>
+                                <h6 className="text-right">{data.sales}</h6>
                             </div>
                         </div>
                     </div>
@@ -169,7 +173,7 @@ class Dashboard extends Component {
                             <div className="card-body">
                                 <h5 className="card-title">Pembelian</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Total Pendapatan hari ini</h6>
-                                <h6 className="text-right">{purchase}</h6>
+                                <h6 className="text-right">{data.purchase}</h6>
                             </div>
                         </div>
                     </div>
@@ -179,7 +183,7 @@ class Dashboard extends Component {
                             <div className="card-body">
                                 <h5 className="card-title">Total Pendapatan</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Total Pendapatan hari ini</h6>
-                                <h6 className="text-right">{income}</h6>
+                                <h6 className="text-right">{data.income}</h6>
                             </div>
                         </div>
                     </div>
@@ -189,7 +193,7 @@ class Dashboard extends Component {
                             <div className="card-body">
                                 <h5 className="card-title">Keuntungan</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Total keuntungan hari ini</h6>
-                                <h6 className="text-right">{profit}</h6>
+                                <h6 className="text-right">{data.profit}</h6>
                             </div>
                         </div>
                     </div>
@@ -255,6 +259,7 @@ class Dashboard extends Component {
             </Fragment>
         )
     }
+
 }
 
-export default Dashboard
+export default withToastManager(Dashboard)

@@ -45,6 +45,7 @@ import ViewPurchase from './views/Purchase/ViewPurchase';
 import ViewExpense from './views/Expense/ViewExpense';
 import EditExpense from './views/Expense/EditExpense';
 import SetUrl from './components/SetUrl';
+import Starting from './views/Starting';
 
 export default [
     {
@@ -316,5 +317,11 @@ export default [
         exact: true,
         layout: FullScreen,
         component: Welcome
+    },
+    {
+        path: '/starting',
+        exact: true,
+        layout: FullScreen,
+        component: Starting
     }
 ]
