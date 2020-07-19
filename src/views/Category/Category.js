@@ -39,6 +39,9 @@ function Category (props) {
     }, [state.page, state.perpage, state.ordering, state.filter])
 
     const handleChange = (name) => (e) => {
+
+        setValidate(null)
+        
         setState({
             ...state,
             [name]: e.target.value
@@ -88,8 +91,8 @@ function Category (props) {
 
         }).catch(err => {
             if (err.response) {
-                if (err.response.status === 422) {
-                    setValidate(err.respose)
+                if (err.response.status === 400) {
+                    setValidate(err.response.data)
                 }
             }
         }).finally(() => {
@@ -156,8 +159,8 @@ function Category (props) {
 
         }).catch(err => {
             if (err.response) {
-                if (err.response.status === 422) {
-                    setValidate(err.respose)
+                if (err.response.status === 400) {
+                    setValidate(err.response.data)
                 }
             }
         }).finally(() => {
@@ -192,8 +195,8 @@ function Category (props) {
             fetchCategory()
         }).catch(err => {
             if (err.response) {
-                if (err.response.status === 422) {
-                    setValidate(err.respose)
+                if (err.response.status === 400) {
+                    setValidate(err.response.data)
                 }
             }
         }).finally(() => {
@@ -221,8 +224,8 @@ function Category (props) {
             setTotal(res.data.count)
         }).catch(err => {
             if (err.response) {
-                if (err.response.status === 422) {
-                    setValidate(err.respose)
+                if (err.response.status === 400) {
+                    setValidate(err.response.data)
                 }
             }
         }).finally(() => {
@@ -250,8 +253,8 @@ function Category (props) {
 
         }).catch(err => {
             if (err.response) {
-                if (err.response.status === 422) {
-                    setValidate(err.respose)
+                if (err.response.status === 400) {
+                    setValidate(err.response.data)
                 }
             }
         }).finally(() => {

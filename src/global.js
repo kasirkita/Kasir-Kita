@@ -8,5 +8,6 @@
 
 // export { url }
 
-const url = localStorage.getItem('url')
+// const url = localStorage.getItem('url')/
+const url = 'http://localhost:5000/api'
 export { url }
